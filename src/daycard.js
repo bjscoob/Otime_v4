@@ -98,7 +98,6 @@ export default class DayCard extends React.Component {
       </Typography>
     ));
     content = <div>{times}</div>;
-
     return (
       <div>
         <ButtonBase

@@ -67,7 +67,36 @@ export default class Popup extends React.Component {
         },
         body: JSON.stringify({
           punchAction: "1",
-          id: this.props.payPeriod,
+          id: this.props.id,
+          dt: d + " " + t
+        })
+      };
+      var response = await fetch(
+        "https://jax-apps.com/otime_app/api/punch.php",
+        requestOptions
+      );
+      var dataTEXT = await response.text();
+      try {
+        var data = JSON.parse(dataTEXT);
+        console.log(data);
+      } catch (e) {
+        console.log(dataTEXT);
+      }
+    }
+  }
+  async endPunch() {
+    var d = this.props.dt;
+    var t = moment().format("HH:mm:ss");
+    if (this.props.payPeriod != -1) {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+          punchAction: "2",
+          id: this.props.id,
           dt: d + " " + t
         })
       };
@@ -128,7 +157,9 @@ export default class Popup extends React.Component {
           <button class="punchIn" onClick={this.createPunch.bind(this)}>
             punch in
           </button>
-          <button class="punchOut">punch out</button>
+          <button class="punchOut" onClick={this.endPunch.bind(this)}>
+            punch out
+          </button>
           <button class="break">start break</button>
           <button class="break">end break</button>
           <button
@@ -140,7 +171,7 @@ export default class Popup extends React.Component {
           </button>
           <div>
             <ul id="popTimes">
-              {this.props.data.map((t) => (
+              {/*this.props.data.map((t) => (
                 <li>
                   {t.getClass() == "startPunch" && (
                     <label class={t.getClass()} background="#f6f6f6">
@@ -163,7 +194,7 @@ export default class Popup extends React.Component {
                   <hr class={t.getClass()} />
                   <br />
                 </li>
-              ))}
+                  ))*/}
             </ul>
           </div>
           <button class="savePopBtn">SAVE</button>

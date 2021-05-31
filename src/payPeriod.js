@@ -58,7 +58,6 @@ export default class PayPeriod extends React.Component {
     }
     var weekArr = [];
     var startDate = moment(this.props.startsDate);
-    console.log(this.props.startsDate);
     var sDate = Date.parse(this.props.startDate);
     var b = 0;
     for (var y = 0; y < dayIndex; y++) {
@@ -104,6 +103,7 @@ export default class PayPeriod extends React.Component {
           elapsedTime="0.0"
           times={this.filterTimesAt(moda)}
           stop={stop}
+          payPeriod={this.props.id}
           popUpFn={this.props.openPopup.bind(this)}
           addHrsFn={this.props.addToHours.bind(this)}
           colorBg={this.props.colors}

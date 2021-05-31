@@ -172,6 +172,7 @@ export class App extends React.Component {
             startsDate={this.state.startsDate}
             doubleWeek={this.state.doubleweek}* */
     this.setState({
+      ppId: pp.id,
       startsAt: sa,
       startsDate: sd,
       doubleWeek: job.value.isWeekly,
@@ -200,13 +201,14 @@ export class App extends React.Component {
       console.log(dataTEXT);
     }
   }
-  openPopup(day, times) {
+  openPopup(day, dt, times) {
     var timeArr = times;
     var popDay = [day];
     this.setState({
       showPopup: !this.state.showPopup,
       bgz: "100",
-      popDay: popDay,
+      dt: dt,
+      popDay: day,
       popData: timeArr,
       foregr: "fadeout"
     });
@@ -336,6 +338,9 @@ export class App extends React.Component {
           <Popup
             colorBg={this.state.colors}
             day={this.state.popDay}
+            payPeriod={this.state.payPeriod}
+            id={this.state.ppId}
+            dt={this.state.dt}
             data={this.state.popData}
             closePopup={this.closePopup.bind(this)}
           />
