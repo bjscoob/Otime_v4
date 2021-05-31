@@ -45,7 +45,8 @@ export class App extends React.Component {
       currJob: "",
       startsAt: "Sun",
       startsDate: moment().format("YYYY-MM-DD HH:mm:ss"),
-      doubleWeek: 0
+      doubleWeek: 0,
+      punches: []
     };
     this.hours = this.state.totalHours;
     this.overtimeHours = 0.0;
@@ -163,18 +164,43 @@ export class App extends React.Component {
       totalHours: prevState.totalHours + h
     }));
   }
+  async getPunches(ppId) {
+    if (ppId != -1) {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+          punchAction: "3",
+          id: ppId
+        })
+      };
+      var response = await fetch(
+        "https://jax-apps.com/otime_app/api/punch.php",
+        requestOptions
+      );
+      var dataTEXT = await response.text();
+      try {
+        var data = JSON.parse(dataTEXT);
+        return data;
+      } catch (e) {
+        return dataTEXT;
+      }
+    }
+  }
   async setJob(job) {
     var arr = job.value.periodStarts.toString().split(" ");
     var sa = arr[0];
     var pp = await this.getPayPdtStart(job.value.id);
+    var punches = await this.getPunches(pp.id);
     var sd = pp.startDay.toString().substring(0, 10);
-    /*startsAt={this.state.startsAt}
-            startsDate={this.state.startsDate}
-            doubleWeek={this.state.doubleweek}* */
     this.setState({
       ppId: pp.id,
       startsAt: sa,
       startsDate: sd,
+      punches: punches,
       doubleWeek: job.value.isWeekly,
       payRate: Number(job.value.payrate),
       currJob: job
@@ -239,7 +265,6 @@ export class App extends React.Component {
     });
   }
   render() {
-    console.log(this.state.ppId);
     this.baseHours = this.getBaseHours();
     var dayRefs = [];
     var weekOne = [];
@@ -387,6 +412,7 @@ export class App extends React.Component {
             openPopup={this.openPopup.bind(this)}
             addToHours={this.addToHours.bind(this)}
             cardWidth={this.cardWidth}
+            punches={this.state.punches}
           />
           <div class="menuContainer" style={{ position: "absolute" }}>
             <br />

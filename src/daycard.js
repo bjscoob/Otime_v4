@@ -10,14 +10,15 @@ import ButtonBase from "@material-ui/core/ButtonBase";
 export default class DayCard extends React.Component {
   constructor(props) {
     super(props);
-    this.times = [];
+    this.times = this.props.times;
     this.count = 0;
     this.hasData = false;
     this.state = {
       payRate: this.props.payRate,
       day: this.props.day,
       fg: "black",
-      bg: "white"
+      bg: "white",
+      hasData: false
     };
     //diff(
     //moment(this.firstPunch, "MM/DD/YYYY HH:mm:ss")
@@ -90,13 +91,16 @@ export default class DayCard extends React.Component {
   render() {
     var content;
     //this.getTotalTime();
-    var times = this.times.map((punch) => (
-      <Typography>
-        <div class={punch.getClass()}>{punch.time}</div>
+    var times = [];
+    if (this.times) {
+      times = this.times.map((punch) => (
+        <Typography>
+          <div class={punch.getClass()}>{punch.time}</div>
 
-        <hr class={punch.getClass()} />
-      </Typography>
-    ));
+          <hr class={punch.getClass()} />
+        </Typography>
+      ));
+    }
     content = <div>{times}</div>;
     return (
       <div>
@@ -156,5 +160,10 @@ export default class DayCard extends React.Component {
         </ButtonBase>
       </div>
     );
+  }
+  componentDidUpdate() {
+    if (!this.state.hasData) {
+      this.setState({ hasData: true });
+    }
   }
 }

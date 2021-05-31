@@ -12,32 +12,6 @@ export default class PayPeriod extends React.Component {
     };
     this.times = [];
   }
-  async getPunches(ppId) {
-    if (!this.state.hasData && ppId != -1) {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        },
-        body: JSON.stringify({
-          punchAction: "3",
-          id: ppId
-        })
-      };
-      var response = await fetch(
-        "https://jax-apps.com/otime_app/api/punch.php",
-        requestOptions
-      );
-      var dataTEXT = await response.text();
-      try {
-        var data = JSON.parse(dataTEXT);
-        return data;
-      } catch (e) {
-        return dataTEXT;
-      }
-    }
-  }
   filterTimesAt(moda) {
     var timeArr = [];
     if (this.times.length) {
@@ -47,10 +21,23 @@ export default class PayPeriod extends React.Component {
         }
       }
     }
+
     return timeArr;
   }
   render() {
-    console.log(this.state.punches);
+    this.times = [];
+    if (this.props.punches.length > 0) {
+      this.props.punches.forEach((punch) => {
+        if (punch.end) {
+          //START PUNCH is complete
+          this.times.push(new Time(punch.id, punch.start, true, true));
+          this.times.push(new Time(punch.id, punch.end, false, true));
+        } else {
+          //START PUNCH not complete
+          this.times.push(new Time(punch.id, punch.start, true, false));
+        }
+      });
+    }
     var dayRefs = [];
     var weekOne = [];
     var weekTwo = [];
@@ -144,6 +131,7 @@ export default class PayPeriod extends React.Component {
         b++;
       }
     }
+    console.log(weeks);
     dayRefs = (
       <div className="weekView">
         <div class="week1">{weekOne}</div>
@@ -153,6 +141,6 @@ export default class PayPeriod extends React.Component {
     );
 
     this.dayRefs = dayRefs;
-    return this.dayRefs;
+    return dayRefs;
   }
 }
