@@ -39,7 +39,7 @@ export class App extends React.Component {
       multiplier: 1.5,
       hasData: false,
       status: 0,
-      id: "",
+      id: -1,
       email: "",
       name: "",
       currJob: "",
@@ -239,6 +239,7 @@ export class App extends React.Component {
     });
   }
   render() {
+    console.log(this.state.ppId);
     this.baseHours = this.getBaseHours();
     var dayRefs = [];
     var weekOne = [];
@@ -378,6 +379,7 @@ export class App extends React.Component {
           />
           <br />
           <PayPeriod
+            id={this.state.ppId}
             startsAt={this.state.startsAt}
             startsDate={this.state.startsDate}
             doubleWeek={this.state.doubleWeek}

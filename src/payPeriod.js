@@ -6,8 +6,37 @@ import moment from "moment";
 export default class PayPeriod extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      hasData: false,
+      punches: []
+    };
     this.times = [];
+  }
+  async getPunches(ppId) {
+    if (!this.state.hasData && ppId != -1) {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+          punchAction: "3",
+          id: ppId
+        })
+      };
+      var response = await fetch(
+        "https://jax-apps.com/otime_app/api/punch.php",
+        requestOptions
+      );
+      var dataTEXT = await response.text();
+      try {
+        var data = JSON.parse(dataTEXT);
+        return data;
+      } catch (e) {
+        return dataTEXT;
+      }
+    }
   }
   filterTimesAt(moda) {
     var timeArr = [];
@@ -21,6 +50,7 @@ export default class PayPeriod extends React.Component {
     return timeArr;
   }
   render() {
+    console.log(this.state.punches);
     var dayRefs = [];
     var weekOne = [];
     var weekTwo = [];
