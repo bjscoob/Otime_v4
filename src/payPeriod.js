@@ -131,7 +131,6 @@ export default class PayPeriod extends React.Component {
         b++;
       }
     }
-    console.log(weeks);
     dayRefs = (
       <div className="weekView">
         <div class="week1">{weekOne}</div>

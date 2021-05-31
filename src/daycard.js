@@ -18,7 +18,8 @@ export default class DayCard extends React.Component {
       day: this.props.day,
       fg: "black",
       bg: "white",
-      hasData: false
+      hasData: false,
+      times: this.props.times
     };
     //diff(
     //moment(this.firstPunch, "MM/DD/YYYY HH:mm:ss")
@@ -92,18 +93,21 @@ export default class DayCard extends React.Component {
     var content;
     //this.getTotalTime();
     var times = [];
-    if (this.times) {
-      times = this.times.map((punch) => (
-        <Typography>
-          <div class={punch.getClass()}>{punch.time}</div>
+    if (this.props.times) {
+      for (var f = 0; f < this.props.times.length; f++) {
+        var punch = this.props.times[f];
+        times.push(
+          <Typography>
+            <div class={punch.getClass()}>{punch.time}</div>
 
-          <hr class={punch.getClass()} />
-        </Typography>
-      ));
+            <hr class={punch.getClass()} />
+          </Typography>
+        );
+      }
     }
     content = <div>{times}</div>;
     return (
-      <div>
+      <div key={this.props.times}>
         <ButtonBase
           style={{ visibility: this.props.isVisible }}
           onClick={(event) => {
