@@ -190,6 +190,9 @@ export class App extends React.Component {
       }
     }
   }
+  liftState() {
+    this.setJob(this.state.currJob);
+  }
   async setJob(job) {
     var arr = job.value.periodStarts.toString().split(" ");
     var sa = arr[0];
@@ -366,8 +369,10 @@ export class App extends React.Component {
             day={this.state.popDay}
             payPeriod={this.state.payPeriod}
             id={this.state.ppId}
+            job={this.state.currJob}
             dt={this.state.dt}
             data={this.state.popData}
+            liftState={this.liftState.bind(this)}
             closePopup={this.closePopup.bind(this)}
           />
         ) : null}

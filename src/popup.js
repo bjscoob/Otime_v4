@@ -16,7 +16,8 @@ export default class Popup extends React.Component {
       delActive: false,
       delBtn: "delBtnDis",
       punchId: -1,
-      punchTime: ""
+      punchTime: "",
+      data: this.props.data
     };
     this.inputLen = 0;
   }
@@ -76,6 +77,7 @@ export default class Popup extends React.Component {
         requestOptions
       );
       var dataTEXT = await response.text();
+      this.props.liftState();
       try {
         var data = JSON.parse(dataTEXT);
         console.log(data);
@@ -105,9 +107,11 @@ export default class Popup extends React.Component {
         requestOptions
       );
       var dataTEXT = await response.text();
+      this.props.liftState();
       try {
         var data = JSON.parse(dataTEXT);
         console.log(data);
+        this.props.liftState();
       } catch (e) {
         console.log(dataTEXT);
       }
@@ -171,7 +175,7 @@ export default class Popup extends React.Component {
           </button>
           <div>
             <ul id="popTimes">
-              {/*this.props.data.map((t) => (
+              {this.state.data.map((t) => (
                 <li>
                   {t.getClass() == "startPunch" && (
                     <label class={t.getClass()} background="#f6f6f6">
@@ -194,7 +198,7 @@ export default class Popup extends React.Component {
                   <hr class={t.getClass()} />
                   <br />
                 </li>
-                  ))*/}
+              ))}
             </ul>
           </div>
           <button class="savePopBtn">SAVE</button>

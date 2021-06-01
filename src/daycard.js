@@ -111,7 +111,11 @@ export default class DayCard extends React.Component {
         <ButtonBase
           style={{ visibility: this.props.isVisible }}
           onClick={(event) => {
-            this.props.popUpFn(this.props.moda, this.props.dt, this.times);
+            this.props.popUpFn(
+              this.props.moda,
+              this.props.dt,
+              this.props.times
+            );
           }}
         >
           <Card
