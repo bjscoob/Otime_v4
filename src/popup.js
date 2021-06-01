@@ -21,7 +21,19 @@ export default class Popup extends React.Component {
     };
     this.inputLen = 0;
   }
-
+  addTime(id, date, isStartPunch) {
+    //(id, date, isStartPunch, isComplete)
+    var t = new Time(id, date, isStartPunch, false);
+    if (!isStartPunch) {
+      t.isStartPunch = false;
+      t.isComplete = true;
+    }
+    this.state.data.push(t);
+    console.log(t);
+    this.setState({
+      data: this.state.data
+    });
+  }
   toggleOn(e) {
     setTimeout(
       function () {
@@ -78,12 +90,10 @@ export default class Popup extends React.Component {
       );
       var dataTEXT = await response.text();
       this.props.liftState();
+      this.addTime(dataTEXT, d + " " + t, true);
       try {
-        var data = JSON.parse(dataTEXT);
-        console.log(data);
-      } catch (e) {
         console.log(dataTEXT);
-      }
+      } catch (e) {}
     }
   }
   async endPunch() {
@@ -109,12 +119,9 @@ export default class Popup extends React.Component {
       var dataTEXT = await response.text();
       this.props.liftState();
       try {
-        var data = JSON.parse(dataTEXT);
-        console.log(data);
         this.props.liftState();
-      } catch (e) {
-        console.log(dataTEXT);
-      }
+        this.addTime(dataTEXT, d + " " + t, false);
+      } catch (e) {}
     }
   }
   delPunch() {

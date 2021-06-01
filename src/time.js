@@ -35,6 +35,29 @@ export default class Time extends React.Component {
     return " : OUT";
   }
   render() {
-    return null;
+    return (
+      <li>
+        {this.getClass() == "startPunch" && (
+          <label class={this.getClass()} background="#f6f6f6">
+            {this.getText()}
+          </label>
+        )}
+        <input
+          class={this.getClass()}
+          type="text"
+          maxLength="5"
+          id={this.time + "|" + this.id}
+          placeholder={this.time}
+          onFocus={this.toggleOn.bind(this)}
+          onBlur={this.toggleOff.bind(this)}
+          onChange={this.updText.bind(this)}
+        />
+        {this.getClass() == "endPunch" && (
+          <label class={this.getClass()}>{this.getText()}</label>
+        )}
+        <hr class={this.getClass()} />
+        <br />
+      </li>
+    );
   }
 }

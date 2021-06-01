@@ -123,9 +123,9 @@ export class App extends React.Component {
   getColors() {
     var today = new Date();
     var hourNow = today.getHours();
-    var purple = "#CC99C9"; //0
-    var blue = "#9EC1CF"; //1
-    var green = "#9EE09E"; //2
+    var purple = "#9400d3"; //0
+    var blue = "#175aa4"; //1
+    var green = "#20d66f"; //2
     var yellow = "#FDFD97"; //3
     var orange = "#FEB144"; //4
     var red = "#FF6663"; //5
@@ -423,8 +423,7 @@ export class App extends React.Component {
             <br />
             <h3
               style={{
-                background: this.state.colors[0],
-                color: this.state.colors[1]
+                background: this.state.colors[0]
               }}
             >
               Base Time:{" "}
@@ -436,8 +435,7 @@ export class App extends React.Component {
             <br />
             <h3
               style={{
-                background: this.state.colors[0],
-                color: this.state.colors[1]
+                background: this.state.colors[0]
               }}
             >
               Over Time:{" "}
@@ -450,8 +448,7 @@ export class App extends React.Component {
             <br />
             <h3
               style={{
-                background: this.state.colors[1],
-                color: this.state.colors[0]
+                background: this.state.colors[1]
               }}
             >
               Total Time:{" "}
@@ -463,8 +460,7 @@ export class App extends React.Component {
             <br />
             <h3
               style={{
-                background: this.state.colors[0],
-                color: this.state.colors[1]
+                background: this.state.colors[0]
               }}
             >
               Base Pay:{" "}
@@ -477,8 +473,7 @@ export class App extends React.Component {
             <h3
               class="olabel"
               style={{
-                background: this.state.colors[0],
-                color: this.state.colors[1]
+                background: this.state.colors[0]
               }}
             >
               O-time Pay:{" "}
@@ -496,8 +491,7 @@ export class App extends React.Component {
             <br />
             <h3
               style={{
-                background: this.state.colors[1],
-                color: this.state.colors[0]
+                background: this.state.colors[1]
               }}
             >
               Total Pay:{" "}
