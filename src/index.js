@@ -51,7 +51,7 @@ export class App extends React.Component {
     this.hours = this.state.totalHours;
     this.overtimeHours = 0.0;
     //default cardwidth should be 160. If anything else its for testing
-    this.cardWidth = "160";
+    this.cardWidth = "40";
     if (isMobileOnly) {
       this.cardWidth = "40";
     }

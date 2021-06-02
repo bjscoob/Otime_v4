@@ -2,8 +2,6 @@
   font-family: sans-serif;
   text-align: center;
   z-index: 200;
-  padding-left: 20%;
-  padding-right: 20%;
 }
 .BackView {
   z-index: -100;
@@ -153,6 +151,8 @@ h4.rightSect {
   border-radius: 12px;
   border: 2px solid rgba(189, 195, 199, 0.5);
   box-shadow: 0px 0px 6px BLACK;
+  margin-left: 20%;
+  margin-right: 20%;
 }
 .olabel {
   margin-left: -25px;
@@ -200,7 +200,6 @@ h4.rightSect {
 
 .weekView {
   display: grid;
-  margin-left: 17.5%;
 }
 .week1,
 .week2,
