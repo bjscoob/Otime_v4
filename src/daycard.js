@@ -52,13 +52,14 @@ export default class DayCard extends React.Component {
     return (diffInMs / (1000 * 60 * 60)).toFixed(2);
   }
   getTotalTime() {
-    if (!this.hasData) {
-      var timeArr = this.props.times;
+    if (!this.state.hasData) {
+      var timeArr = this.state.times;
       var totalTime = 0.0;
-      if (!!timeArr.length) {
+      if (timeArr.length < 1) {
         return totalTime;
       }
       var last = timeArr[timeArr.length - 1];
+      console.log("DayCard " + last.id);
       //check if first element is an end punch, if so insert 00:00 in front
       if (!timeArr[0].isStartPunch) {
         var firstTime = new Time(-1, this.props.moda + " 00:00", 2, true);
@@ -83,19 +84,26 @@ export default class DayCard extends React.Component {
           console.log("Open Punch Day Card: " + this.props.moda);
         }
       }
+
       this.times = timeArr;
       this.elapsedTime = totalTime;
       this.props.addHrsFn(this.elapsedTime);
-      this.hasData = true;
+      this.setState({
+        times: timeArr,
+        hasData: true
+      });
     }
   }
   render() {
     var content;
-    //this.getTotalTime();
+    this.getTotalTime();
+    if (this.props.moda == "05/31") {
+      console.log(this.props.times);
+    }
     var times = [];
-    if (this.props.times) {
-      for (var f = 0; f < this.props.times.length; f++) {
-        var punch = this.props.times[f];
+    if (this.state.times.length > 0) {
+      for (var f = 0; f < this.state.times.length; f++) {
+        var punch = this.state.times[f];
         times.push(
           <Typography>
             <div class={punch.getClass()}>{punch.time}</div>
@@ -114,7 +122,7 @@ export default class DayCard extends React.Component {
             this.props.popUpFn(
               this.props.moda,
               this.props.dt,
-              this.props.times
+              this.state.times
             );
           }}
         >
@@ -169,9 +177,12 @@ export default class DayCard extends React.Component {
       </div>
     );
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (!this.state.hasData) {
-      this.setState({ hasData: true });
+      this.setState({
+        times: this.props.times,
+        hasData: true
+      });
     }
   }
 }

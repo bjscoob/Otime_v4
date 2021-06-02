@@ -25,6 +25,8 @@ export default class PayPeriod extends React.Component {
     return timeArr;
   }
   render() {
+    console.log("PP Got:");
+    console.log(this.props.punches);
     this.times = [];
     if (this.props.punches.length > 0) {
       this.props.punches.forEach((punch) => {
@@ -87,7 +89,7 @@ export default class PayPeriod extends React.Component {
           color={this.props.colors[1]}
           day={dayOfWeek}
           elapsedTime="0.0"
-          //times={this.filterTimesAt(moda)}
+          times={[]}
           stop={stop}
           //popUpFn={this.openPopup.bind(this)}
           //addHrsFn={this.addToHours.bind(this)}
@@ -142,4 +144,5 @@ export default class PayPeriod extends React.Component {
     this.dayRefs = dayRefs;
     return dayRefs;
   }
+  componentDidUpdate(prevProps) {}
 }

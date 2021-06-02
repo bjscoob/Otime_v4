@@ -126,7 +126,7 @@ export class App extends React.Component {
     var purple = "#9400d3"; //0
     var blue = "#175aa4"; //1
     var green = "#20d66f"; //2
-    var yellow = "#FDFD97"; //3
+    var yellow = "#FFDA00"; //3
     var orange = "#FEB144"; //4
     var red = "#FF6663"; //5
     //1st is top, second is bottom
@@ -199,6 +199,7 @@ export class App extends React.Component {
     var pp = await this.getPayPdtStart(job.value.id);
     var punches = await this.getPunches(pp.id);
     var sd = pp.startDay.toString().substring(0, 10);
+    let newJob = JSON.parse(JSON.stringify(job));
     this.setState({
       ppId: pp.id,
       startsAt: sa,
@@ -206,7 +207,7 @@ export class App extends React.Component {
       punches: punches,
       doubleWeek: job.value.isWeekly,
       payRate: Number(job.value.payrate),
-      currJob: job
+      currJob: newJob
     });
   }
   async getPayPdtStart(jobId) {
@@ -418,6 +419,7 @@ export class App extends React.Component {
             addToHours={this.addToHours.bind(this)}
             cardWidth={this.cardWidth}
             punches={this.state.punches}
+            key={this.state.punches}
           />
           <div class="menuContainer" style={{ position: "absolute" }}>
             <br />

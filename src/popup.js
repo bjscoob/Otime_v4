@@ -17,7 +17,8 @@ export default class Popup extends React.Component {
       delBtn: "delBtnDis",
       punchId: -1,
       punchTime: "",
-      data: this.props.data
+      data: this.props.data,
+      tempArr: []
     };
     this.inputLen = 0;
   }
@@ -46,7 +47,8 @@ export default class Popup extends React.Component {
           delActive: false,
           delBtn: "delBtnAbl",
           punchId: id,
-          punchTime: time
+          punchTime: time,
+          timeClass: e.target.className
         });
       }.bind(this),
       150
@@ -55,14 +57,36 @@ export default class Popup extends React.Component {
   toggleOff(e) {
     setTimeout(
       function () {
+        var tempArr = this.state.tempArr;
+        var id = e.target.id.split("|")[1];
         //Start the timer
+        if (e.target.value.length != 5) {
+          e.target.value = "";
+          tempArr = tempArr.filter(
+            (t) => t.key != id + "|" + e.target.className
+          );
+        } else {
+          var a = e.target.value.toString().split(":");
+          if (Number(a[0]) > 23 || Number(a[1]) > 59) {
+            e.target.value = "";
+            tempArr = tempArr.filter(
+              (t) => t.key != id + "|" + e.target.className
+            );
+          } else {
+            tempArr.push({
+              key: id + "|" + e.target.className,
+              value: id + "|" + e.target.value + ":00|" + e.target.className
+            });
+          }
+        }
         var id = e.target.id.split("|")[0];
         e.target.placeholder = id;
         this.setState({
           delActive: true,
           delBtn: "delBtnDis",
           punchId: -1,
-          punchTime: ""
+          punchTime: "",
+          tempArr: tempArr
         });
       }.bind(this),
       100
@@ -124,8 +148,89 @@ export default class Popup extends React.Component {
       } catch (e) {}
     }
   }
-  delPunch() {
-    console.log(this.state.punchId + " : " + this.state.punchTime);
+  async delPunch() {
+    var tc = this.state.timeClass;
+    var id = this.state.punchId;
+    var action = tc == "startPunch" ? 4 : 5;
+    if (this.props.payPeriod != -1) {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+          punchAction: action,
+          id: id
+        })
+      };
+      var response = await fetch(
+        "https://jax-apps.com/otime_app/api/punch.php",
+        requestOptions
+      );
+      var dataTEXT = await response.text();
+      this.subtractTime(id, tc);
+      this.props.liftState();
+      try {
+        console.log(dataTEXT);
+      } catch (e) {}
+    }
+  }
+  async savePunches() {
+    setTimeout(async () => {}, 3000);
+    for (var t = 0; t < this.state.tempArr.length; t++) {
+      var a = this.state.tempArr[t].value.toString().split("|");
+      await this.editPunch(a[0], a[1], a[2]);
+    }
+    this.props.liftState();
+  }
+  async editPunch(id, time, isStart) {
+    var d = this.props.dt;
+    var action = isStart == "startPunch" ? 6 : 7;
+    if (this.props.payPeriod != -1) {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: JSON.stringify({
+          punchAction: action,
+          id: id,
+          time: d + " " + time
+        })
+      };
+      var response = await fetch(
+        "https://jax-apps.com/otime_app/api/punch.php",
+        requestOptions
+      );
+      var dataTEXT = await response.text();
+      this.props.liftState();
+      try {
+        console.log(dataTEXT);
+      } catch (e) {}
+    }
+  }
+  subtractTime(id, tc) {
+    var arr = this.state.data;
+    for (var p = 0; p < this.state.data.length; p++) {
+      var punch = this.state.data[p];
+      if (punch.id == id && punch.getClass() == tc) {
+        arr.splice(p, 1);
+      }
+    }
+    if (tc == "startPunch") {
+      for (var m = 0; m < arr.length; m++) {
+        var punch = arr[m];
+        if (punch.id == id) {
+          arr.splice(m, 1);
+        }
+      }
+    }
+
+    this.setState({
+      data: arr
+    });
   }
   is_numeric(c) {
     if (c >= "0" && c <= "9") {
@@ -156,6 +261,35 @@ export default class Popup extends React.Component {
     this.inputLen = e.target.value.length;
   }
   render() {
+    var timeViews = [];
+    for (var l = 0; l < this.state.data.length; l++) {
+      var t = this.state.data[l];
+      console.log(t.id);
+      timeViews.push(
+        <li>
+          {t.getClass() == "startPunch" && (
+            <label class={t.getClass()} background="#f6f6f6">
+              {t.getText()}
+            </label>
+          )}
+          <input
+            class={t.getClass()}
+            type="text"
+            maxLength="5"
+            id={t.time + "|" + t.id}
+            placeholder={t.time}
+            onFocus={this.toggleOn.bind(this)}
+            onBlur={this.toggleOff.bind(this)}
+            onChange={this.updText.bind(this)}
+          />
+          {t.getClass() == "endPunch" && (
+            <label class={t.getClass()}>{t.getText()}</label>
+          )}
+          <hr class={t.getClass()} />
+          <br />
+        </li>
+      );
+    }
     return (
       <div className="popup">
         <div className="popup_inner">
@@ -171,8 +305,6 @@ export default class Popup extends React.Component {
           <button class="punchOut" onClick={this.endPunch.bind(this)}>
             punch out
           </button>
-          <button class="break">start break</button>
-          <button class="break">end break</button>
           <button
             class={this.state.delBtn}
             disabled={this.state.delActive}
@@ -181,34 +313,11 @@ export default class Popup extends React.Component {
             delete punch
           </button>
           <div>
-            <ul id="popTimes">
-              {this.state.data.map((t) => (
-                <li>
-                  {t.getClass() == "startPunch" && (
-                    <label class={t.getClass()} background="#f6f6f6">
-                      {t.getText()}
-                    </label>
-                  )}
-                  <input
-                    class={t.getClass()}
-                    type="text"
-                    maxLength="5"
-                    id={t.time + "|" + t.id}
-                    placeholder={t.time}
-                    onFocus={this.toggleOn.bind(this)}
-                    onBlur={this.toggleOff.bind(this)}
-                    onChange={this.updText.bind(this)}
-                  />
-                  {t.getClass() == "endPunch" && (
-                    <label class={t.getClass()}>{t.getText()}</label>
-                  )}
-                  <hr class={t.getClass()} />
-                  <br />
-                </li>
-              ))}
-            </ul>
+            <ul id="popTimes">{timeViews}</ul>
           </div>
-          <button class="savePopBtn">SAVE</button>
+          <button class="savePopBtn" onClick={this.savePunches.bind(this)}>
+            SAVE
+          </button>
         </div>
       </div>
     );
