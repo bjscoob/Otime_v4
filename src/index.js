@@ -52,9 +52,9 @@ export class App extends React.Component {
     this.baseHours = 0.0;
     this.overtimeHours = 0.0;
     //default cardwidth should be 160. If anything else its for testing
-    this.cardWidth = "40";
+    this.cardWidth = "35";
     if (isMobileOnly) {
-      this.cardWidth = "40";
+      this.cardWidth = "35";
     }
     if (isTablet) {
       this.cardWidth = "80";
@@ -231,6 +231,7 @@ export class App extends React.Component {
   }
 
   openPopup(day, dt, times) {
+    //console.log(times);
     var timeArr = times;
     var popDay = [day];
     this.setState({
@@ -418,6 +419,7 @@ export class App extends React.Component {
             openPopup={this.openPopup.bind(this)}
             addToHours={this.addToHours.bind(this)}
             cardWidth={this.cardWidth}
+            payRate={this.state.payRate}
             punches={this.state.punches}
             addToHours={this.addToHours.bind(this)}
             key={this.state.punches}

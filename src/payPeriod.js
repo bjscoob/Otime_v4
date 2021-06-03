@@ -11,6 +11,7 @@ export default class PayPeriod extends React.Component {
       punches: []
     };
     this.times = [];
+    this.totals = 0.0;
   }
   filterTimesAt(moda) {
     var timeArr = [];
@@ -47,20 +48,18 @@ export default class PayPeriod extends React.Component {
     const diffInMs = Math.abs(d2 - d1);
     return (diffInMs / (1000 * 60 * 60)).toFixed(2);
   }
-  getTotalTime(timeArr) {
-    console.log(timeArr);
+  getTotalTime(timeArr, moda) {
     var totalTime = 0.0;
     if (timeArr.length > 0) {
       var last = timeArr[timeArr.length - 1];
-      console.log("DayCard " + last.id);
       //check if first element is an end punch, if so insert 00:00 in front
       if (!timeArr[0].isStartPunch) {
-        var firstTime = new Time(-1, this.props.moda + " 00:00", 2, true);
+        var firstTime = new Time(-1, moda + " 00:00", 2, true);
         timeArr = [firstTime].concat(timeArr);
       }
       //check if last element is COMPLETE start punch, if so insert 24:00 in back
       if (last.isStartPunch && last.isComplete) {
-        var lastTime = new Time(-1, this.props.moda + " 24:00", 2, true);
+        var lastTime = new Time(-1, moda + " 24:00", 2, true);
         timeArr.push(lastTime);
       }
       for (var i = 0; i < timeArr.length; i += 2) {
@@ -74,14 +73,13 @@ export default class PayPeriod extends React.Component {
             )
           );
         } catch (e) {
-          console.log("Open Punch Day Card: " + this.props.moda);
+          console.log("Open Punch Day Card: " + moda);
         }
       }
-
+      this.totals = totalTime;
       this.props.addToHours(totalTime);
-      console.log(timeArr);
-      return timeArr;
     }
+    return timeArr;
   }
   render() {
     this.times = [];
@@ -111,19 +109,6 @@ export default class PayPeriod extends React.Component {
     }
     dayNames = dayNames.concat(dayNames).concat(dayNames);
     var stop = false;
-    //first week
-    /*if (this.state.hasData) {
-      this.punches.forEach((punch) => {
-        if (punch.end) {
-          //START PUNCH is complete
-          this.times.push(new Time(punch.id, punch.start, true, true));
-          this.times.push(new Time(punch.id, punch.end, false, true));
-        } else {
-          //START PUNCH not complete
-          this.times.push(new Time(punch.id, punch.start, true, false));
-        }
-      });
-    }*/
 
     var weekNo = 1;
     if (this.props.startsAt != "Sun") {
@@ -141,7 +126,7 @@ export default class PayPeriod extends React.Component {
         <DayCard
           isVisible="hidden"
           cardWidth={this.props.cardWidth}
-          payRate={this.state.payRate}
+          payRate={this.props.payRate}
           moda={moda}
           color={this.props.colors[1]}
           day={dayOfWeek}
@@ -168,19 +153,18 @@ export default class PayPeriod extends React.Component {
         stop = true;
       }
       var preTimes = this.filterTimesAt(moda);
-      var postTimes = this.getTotalTime(preTimes);
-      console.log(postTimes);
+      var postTimes = this.getTotalTime(preTimes, moda);
       weeks[b].push(
         <DayCard
           isVisible="visible"
           dt={dt}
           cardWidth={this.props.cardWidth}
-          payRate={this.state.payRate}
+          payRate={this.props.payRate}
           moda={moda}
           color={this.props.colors[1]}
           day={dayOfWeek}
-          elapsedTime="0.0"
-          times={this.filterTimesAt(moda)}
+          elapsedTime={this.totals}
+          times={postTimes}
           stop={stop}
           payPeriod={this.props.id}
           popUpFn={this.props.openPopup.bind(this)}
@@ -188,6 +172,7 @@ export default class PayPeriod extends React.Component {
           colorBg={this.props.colors}
         />
       );
+      this.totals = 0;
 
       if (dayOfWeek == "Sat") {
         b++;

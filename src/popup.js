@@ -15,6 +15,7 @@ export default class Popup extends React.Component {
       times: [],
       delActive: false,
       delBtn: "delBtnDis",
+      savBtn: "savePopBtn",
       punchId: -1,
       punchTime: "",
       data: this.props.data,
@@ -29,10 +30,10 @@ export default class Popup extends React.Component {
       t.isStartPunch = false;
       t.isComplete = true;
     }
-    this.state.data.push(t);
-    console.log(t);
+    var a = this.state.data;
+    a.push(t);
     this.setState({
-      data: this.state.data
+      data: a
     });
   }
   toggleOn(e) {
@@ -46,6 +47,7 @@ export default class Popup extends React.Component {
         this.setState({
           delActive: false,
           delBtn: "delBtnAbl",
+          savBtn: "savePopOff",
           punchId: id,
           punchTime: time,
           timeClass: e.target.className
@@ -59,7 +61,6 @@ export default class Popup extends React.Component {
       function () {
         var tempArr = this.state.tempArr;
         var id = e.target.id.split("|")[1];
-        //Start the timer
         if (e.target.value.length != 5) {
           e.target.value = "";
           tempArr = tempArr.filter(
@@ -84,6 +85,7 @@ export default class Popup extends React.Component {
         this.setState({
           delActive: true,
           delBtn: "delBtnDis",
+          savBtn: "savePopBtn",
           punchId: -1,
           punchTime: "",
           tempArr: tempArr
@@ -142,10 +144,7 @@ export default class Popup extends React.Component {
       );
       var dataTEXT = await response.text();
       this.props.liftState();
-      try {
-        this.props.liftState();
-        this.addTime(dataTEXT, d + " " + t, false);
-      } catch (e) {}
+      this.addTime(dataTEXT, d + " " + t, false);
     }
   }
   async delPunch() {
@@ -177,7 +176,7 @@ export default class Popup extends React.Component {
     }
   }
   async savePunches() {
-    setTimeout(async () => {}, 3000);
+    setTimeout(async () => {}, 1000);
     for (var t = 0; t < this.state.tempArr.length; t++) {
       var a = this.state.tempArr[t].value.toString().split("|");
       await this.editPunch(a[0], a[1], a[2]);
@@ -227,7 +226,11 @@ export default class Popup extends React.Component {
         }
       }
     }
-
+    try {
+      arr.length < 0;
+    } catch (e) {
+      arr = [];
+    }
     this.setState({
       data: arr
     });
@@ -262,33 +265,36 @@ export default class Popup extends React.Component {
   }
   render() {
     var timeViews = [];
-    for (var l = 0; l < this.state.data.length; l++) {
-      var t = this.state.data[l];
-      console.log(t.id);
-      timeViews.push(
-        <li>
-          {t.getClass() == "startPunch" && (
-            <label class={t.getClass()} background="#f6f6f6">
-              {t.getText()}
-            </label>
-          )}
-          <input
-            class={t.getClass()}
-            type="text"
-            maxLength="5"
-            id={t.time + "|" + t.id}
-            placeholder={t.time}
-            onFocus={this.toggleOn.bind(this)}
-            onBlur={this.toggleOff.bind(this)}
-            onChange={this.updText.bind(this)}
-          />
-          {t.getClass() == "endPunch" && (
-            <label class={t.getClass()}>{t.getText()}</label>
-          )}
-          <hr class={t.getClass()} />
-          <br />
-        </li>
-      );
+    try {
+      for (var l = 0; l < this.state.data.length; l++) {
+        var t = this.state.data[l];
+        timeViews.push(
+          <li>
+            {t.getClass() == "startPunch" && (
+              <label class={t.getClass()} background="#f6f6f6">
+                {t.getText()}
+              </label>
+            )}
+            <input
+              class={t.getClass()}
+              type="text"
+              maxLength="5"
+              id={t.time + "|" + t.id}
+              placeholder={t.time}
+              onFocus={this.toggleOn.bind(this)}
+              onBlur={this.toggleOff.bind(this)}
+              onChange={this.updText.bind(this)}
+            />
+            {t.getClass() == "endPunch" && (
+              <label class={t.getClass()}>{t.getText()}</label>
+            )}
+            <hr class={t.getClass()} />
+            <br />
+          </li>
+        );
+      }
+    } catch (e) {
+      console.log("No popup Data");
     }
     return (
       <div className="popup">
@@ -315,7 +321,11 @@ export default class Popup extends React.Component {
           <div>
             <ul id="popTimes">{timeViews}</ul>
           </div>
-          <button class="savePopBtn" onClick={this.savePunches.bind(this)}>
+          <button
+            disabled={!this.state.delActive}
+            class={this.state.savBtn}
+            onClick={this.savePunches.bind(this)}
+          >
             SAVE
           </button>
         </div>

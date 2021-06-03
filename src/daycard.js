@@ -33,7 +33,7 @@ export default class DayCard extends React.Component {
   render() {
     var content;
     var times = [];
-    if (this.props.times.length > 0) {
+    try {
       for (var f = 0; f < this.props.times.length; f++) {
         var punch = this.props.times[f];
         times.push(
@@ -44,7 +44,7 @@ export default class DayCard extends React.Component {
           </Typography>
         );
       }
-    }
+    } catch (e) {}
     content = <div>{times}</div>;
     return (
       <div key={this.props.times}>
@@ -87,7 +87,9 @@ export default class DayCard extends React.Component {
                 <div class="dayName">{this.state.day}</div>
               </Typography>
               <Typography>
-                <div class="dayHours">{this.elapsedTime + " hrs"}</div>
+                <div class="dayHours">
+                  {Number(this.props.elapsedTime).toFixed(2) + " hrs"}
+                </div>
               </Typography>
               <Typography>
                 <hr />
@@ -100,7 +102,7 @@ export default class DayCard extends React.Component {
                 <div class="dayPay">
                   {"$" +
                     Number(
-                      this.state.payRate * Number(this.elapsedTime)
+                      this.props.payRate * Number(this.props.elapsedTime)
                     ).toFixed(2)}
                 </div>
               </Typography>

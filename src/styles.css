@@ -368,6 +368,28 @@ hr {
 .savePopBtn:hover {
   background-color: #405d3a;
 }
+.savePopOff {
+  background-color: grey;
+  border: none;
+  -moz-box-shadow: 0 0 1px black;
+  -webkit-box-shadow: 0 0 1px black;
+  box-shadow: 0 0 1px black;
+  width: 90%;
+  height: 20%;
+  letter-spacing: 3px;
+  border-radius: 5px;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 36px;
+  font-weight: 900;
+  margin: 4px 2px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.25s linear;
+}
 .punchIn,
 .break,
 .punchOut,
