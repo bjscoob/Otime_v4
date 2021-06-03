@@ -33,7 +33,6 @@ export class App extends React.Component {
       showJobs: false,
       popDay: "",
       popData: [],
-      totalHours: 0.0,
       colors: this.getColors(),
       foregr: "foreground",
       multiplier: 1.5,
@@ -48,7 +47,9 @@ export class App extends React.Component {
       doubleWeek: 0,
       punches: []
     };
-    this.hours = this.state.totalHours;
+
+    this.totalHours = 0.0;
+    this.baseHours = 0.0;
     this.overtimeHours = 0.0;
     //default cardwidth should be 160. If anything else its for testing
     this.cardWidth = "40";
@@ -153,16 +154,13 @@ export class App extends React.Component {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
   getBaseHours() {
-    if (this.state.totalHours > this.state.hourCutoff) {
-      this.overtimeHours = this.state.totalHours - this.state.hourCutoff;
-      return this.state.hourCutoff;
+    if (this.totalHours > this.state.hourCutoff) {
+      this.overtimeHours = this.totalHours - this.state.hourCutoff;
+      this.baseHours = this.state.hourCutoff;
     }
-    return this.hours;
   }
   addToHours(h) {
-    this.setState((prevState) => ({
-      totalHours: prevState.totalHours + h
-    }));
+    //this.totalHours +=h;
   }
   async getPunches(ppId) {
     if (ppId != -1) {
@@ -231,6 +229,7 @@ export class App extends React.Component {
       console.log(dataTEXT);
     }
   }
+
   openPopup(day, dt, times) {
     var timeArr = times;
     var popDay = [day];
@@ -269,7 +268,7 @@ export class App extends React.Component {
     });
   }
   render() {
-    this.baseHours = this.getBaseHours();
+    this.getBaseHours();
     var dayRefs = [];
     var weekOne = [];
     var weekTwo = [];
@@ -328,6 +327,7 @@ export class App extends React.Component {
       ) {
         stop = true;
       }
+
       weekArr.push(
         <DayCard
           cardWidth={this.cardWidth}
@@ -419,6 +419,7 @@ export class App extends React.Component {
             addToHours={this.addToHours.bind(this)}
             cardWidth={this.cardWidth}
             punches={this.state.punches}
+            addToHours={this.addToHours.bind(this)}
             key={this.state.punches}
           />
           <div class="menuContainer" style={{ position: "absolute" }}>
@@ -456,7 +457,7 @@ export class App extends React.Component {
               Total Time:{" "}
             </h3>
             <p className="timelabel3">
-              {this.state.totalHours.toFixed(2) + " hours "}
+              {this.totalHours.toFixed(2) + " hours "}
             </p>
             <h4>Pay Rate: ${this.state.payRate.toFixed(2)}</h4>
             <br />
@@ -468,7 +469,7 @@ export class App extends React.Component {
               Base Pay:{" "}
             </h3>
             <p className="payLabel1">
-              {"$" + (this.state.totalHours * this.state.payRate).toFixed(2)}
+              {"$" + (this.totalHours * this.state.payRate).toFixed(2)}
             </p>
             <br />
             <br />
@@ -499,7 +500,7 @@ export class App extends React.Component {
               Total Pay:{" "}
             </h3>
             <p className="payLabel3">
-              {"$" + (this.state.totalHours * this.state.payRate).toFixed(2)}
+              {"$" + (this.totalHours * this.state.payRate).toFixed(2)}
             </p>
           </div>
         </div>

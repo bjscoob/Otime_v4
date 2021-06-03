@@ -19,7 +19,8 @@ export default class DayCard extends React.Component {
       fg: "black",
       bg: "white",
       hasData: false,
-      times: this.props.times
+      times: this.props.times,
+      totalTime: this.props.totalTime
     };
     //diff(
     //moment(this.firstPunch, "MM/DD/YYYY HH:mm:ss")
@@ -28,82 +29,13 @@ export default class DayCard extends React.Component {
   onMouseOver = () =>
     this.setState({ fg: this.props.colorBg[0], bg: this.props.colorBg[1] });
   onMouseOut = () => this.setState({ fg: "black", bg: "white" });
-  calculateTime(startDate, startTime, endDate, endTime) {
-    var sDateArr = startDate.split("/");
-    var sTimeArr = startTime.split(":");
-    var eDateArr = endDate.split("/");
-    var eTimeArr = endTime.split(":");
 
-    var d1 = new Date(
-      "2021",
-      sDateArr[0],
-      sDateArr[1],
-      sTimeArr[0],
-      sTimeArr[1]
-    );
-    var d2 = new Date(
-      "2021",
-      eDateArr[0],
-      eDateArr[1],
-      eTimeArr[0],
-      eTimeArr[1]
-    );
-    const diffInMs = Math.abs(d2 - d1);
-    return (diffInMs / (1000 * 60 * 60)).toFixed(2);
-  }
-  getTotalTime() {
-    if (!this.state.hasData) {
-      var timeArr = this.state.times;
-      var totalTime = 0.0;
-      if (timeArr.length < 1) {
-        return totalTime;
-      }
-      var last = timeArr[timeArr.length - 1];
-      console.log("DayCard " + last.id);
-      //check if first element is an end punch, if so insert 00:00 in front
-      if (!timeArr[0].isStartPunch) {
-        var firstTime = new Time(-1, this.props.moda + " 00:00", 2, true);
-        timeArr = [firstTime].concat(timeArr);
-      }
-      //check if last element is COMPLETE start punch, if so insert 24:00 in back
-      if (last.isStartPunch && last.isComplete) {
-        var lastTime = new Time(-1, this.props.moda + " 24:00", 2, true);
-        timeArr.push(lastTime);
-      }
-      for (var i = 0; i < timeArr.length; i += 2) {
-        try {
-          totalTime += Number(
-            this.calculateTime(
-              timeArr[i].date,
-              timeArr[i].time,
-              timeArr[i + 1].date,
-              timeArr[i + 1].time
-            )
-          );
-        } catch (e) {
-          console.log("Open Punch Day Card: " + this.props.moda);
-        }
-      }
-
-      this.times = timeArr;
-      this.elapsedTime = totalTime;
-      this.props.addHrsFn(this.elapsedTime);
-      this.setState({
-        times: timeArr,
-        hasData: true
-      });
-    }
-  }
   render() {
     var content;
-    this.getTotalTime();
-    if (this.props.moda == "05/31") {
-      console.log(this.props.times);
-    }
     var times = [];
-    if (this.state.times.length > 0) {
-      for (var f = 0; f < this.state.times.length; f++) {
-        var punch = this.state.times[f];
+    if (this.props.times.length > 0) {
+      for (var f = 0; f < this.props.times.length; f++) {
+        var punch = this.props.times[f];
         times.push(
           <Typography>
             <div class={punch.getClass()}>{punch.time}</div>
@@ -122,8 +54,9 @@ export default class DayCard extends React.Component {
             this.props.popUpFn(
               this.props.moda,
               this.props.dt,
-              this.state.times
+              this.props.times
             );
+            this.setState({ hasData: false });
           }}
         >
           <Card

@@ -24,9 +24,66 @@ export default class PayPeriod extends React.Component {
 
     return timeArr;
   }
+  calculateTime(startDate, startTime, endDate, endTime) {
+    var sDateArr = startDate.split("/");
+    var sTimeArr = startTime.split(":");
+    var eDateArr = endDate.split("/");
+    var eTimeArr = endTime.split(":");
+
+    var d1 = new Date(
+      "2021",
+      sDateArr[0],
+      sDateArr[1],
+      sTimeArr[0],
+      sTimeArr[1]
+    );
+    var d2 = new Date(
+      "2021",
+      eDateArr[0],
+      eDateArr[1],
+      eTimeArr[0],
+      eTimeArr[1]
+    );
+    const diffInMs = Math.abs(d2 - d1);
+    return (diffInMs / (1000 * 60 * 60)).toFixed(2);
+  }
+  getTotalTime(timeArr) {
+    console.log(timeArr);
+    var totalTime = 0.0;
+    if (timeArr.length > 0) {
+      var last = timeArr[timeArr.length - 1];
+      console.log("DayCard " + last.id);
+      //check if first element is an end punch, if so insert 00:00 in front
+      if (!timeArr[0].isStartPunch) {
+        var firstTime = new Time(-1, this.props.moda + " 00:00", 2, true);
+        timeArr = [firstTime].concat(timeArr);
+      }
+      //check if last element is COMPLETE start punch, if so insert 24:00 in back
+      if (last.isStartPunch && last.isComplete) {
+        var lastTime = new Time(-1, this.props.moda + " 24:00", 2, true);
+        timeArr.push(lastTime);
+      }
+      for (var i = 0; i < timeArr.length; i += 2) {
+        try {
+          totalTime += Number(
+            this.calculateTime(
+              timeArr[i].date,
+              timeArr[i].time,
+              timeArr[i + 1].date,
+              timeArr[i + 1].time
+            )
+          );
+        } catch (e) {
+          console.log("Open Punch Day Card: " + this.props.moda);
+        }
+      }
+
+      this.props.addToHours(totalTime);
+      console.log(timeArr);
+      return timeArr;
+    }
+  }
   render() {
-    console.log("PP Got:");
-    console.log(this.props.punches);
     this.times = [];
     if (this.props.punches.length > 0) {
       this.props.punches.forEach((punch) => {
@@ -110,6 +167,9 @@ export default class PayPeriod extends React.Component {
       ) {
         stop = true;
       }
+      var preTimes = this.filterTimesAt(moda);
+      var postTimes = this.getTotalTime(preTimes);
+      console.log(postTimes);
       weeks[b].push(
         <DayCard
           isVisible="visible"
