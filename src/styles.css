@@ -618,13 +618,19 @@ input.breakPunch {
   padding: 10px;
 }
 .jobForm {
+  margin-top: -40px;
   margin-left: 3%;
   width: 60%;
   display: inline-block;
 }
 .jobInput {
 }
+
 .payrateBox {
+  align-self: flex-end;
+  font-size: 12px;
+  height: 15px;
+  width: 20px;
   display: flex;
   border-radius: 5px;
   justify-content: center;
@@ -634,8 +640,10 @@ input.breakPunch {
   width: -moz-fit-content;
   width: fit-content;
   color: green;
+  margin-bottom: 10px;
+  box-shadow: 0px 0px 5px black;
 }
-input.payrateBox {
+.payrateBoxInp {
   color: black;
   width: 70px;
   margin: 0px 3px;
@@ -649,12 +657,14 @@ input.payrateBox {
   margin-bottom: 5px;
   font-weight: 600;
   width: 120px;
+
+  box-shadow: 0px 0px 5px black;
 }
 .newJobBtn:hover {
   font-size: 1rem;
 }
 .jobRow {
-  width: 90%;
+  width: 90px;
   background: white;
   border-radius: 5px;
   padding: 6px;
@@ -676,6 +686,41 @@ input.payrateBox {
   background: green;
   padding: 5px;
   border-radius: 5px;
+}
+.saveJobBtn,
+.deleteJobBtn {
+  margin-top: 15px;
+  box-shadow: 0px 0px 5px black;
+  width: 75px;
+}
+.saveJobBtn {
+  background: green;
+}
+.deleteJobBtn {
+  background: red;
+}
+.weeklyRadioOn,
+.weeklyRadioOff,
+.saveJobBtn,
+.deleteJobBtn {
+  border-radius: 5px;
+  padding: 10px;
+  margin-right: 5px;
+  border: none;
+  color: white;
+}
+.weeklyRadioOn {
+  background: black;
+}
+.weeklyRadioOff {
+  background: white;
+  color: grey;
+  box-shadow: 0px 0px 5px black;
+}
+.weeklyRadioOff:hover,
+.saveJobBtn:hover,
+.deleteJobBtn:hover {
+  font-size: 1rem;
 }
 @keyframes floating {
   0% {
@@ -850,15 +895,32 @@ input.payrateBox {
 }
 .aOrp {
   text-align: center;
+
+  box-shadow: 0px 0px 5px black;
 }
 .aOrpCont {
+  box-shadow: 0px 0px 5px black;
   width: 100%;
   display: flex;
 }
 .dateCont {
   display: flex;
+  box-shadow: 0px 0px 5px black;
+  width: 147px;
 }
 .dateLabel {
+  color: white;
   text-align: left;
   margin-bottom: -3px;
+  text-shadow: 0px 0px 5px black;
+}
+.ppLabel {
+  color: white;
+  text-align: left;
+  margin-bottom: -16px;
+  text-shadow: 0px 0px 5px black;
+}
+.nameLabel {
+  color: white;
+  text-shadow: 0px 0px 5px black;
 }

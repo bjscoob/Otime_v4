@@ -11,12 +11,11 @@ export default class JobBtn extends React.Component {
     return (
       <div>
         <ButtonBase
-          class="jobRow"
           onClick={(event) => {
             this.props.setJobData(this.props.job);
           }}
         >
-          <div>
+          <div class="jobRow">
             <div
               style={{
                 fontSize: (this.props.fontSize / 2).toString() + "px",
