@@ -45,16 +45,20 @@ export class App extends React.Component {
       startsAt: "Sun",
       startsDate: moment().format("YYYY-MM-DD HH:mm:ss"),
       doubleWeek: 0,
-      punches: []
+      punches: [],
+      totalHours: 0.0,
+      errorColor: "green",
+      errorMessage: "Success!!!"
     };
-
-    this.totalHours = 0.0;
+    this.errorMessage = "Success!!!";
+    this.errorColor = "green";
+    this.totalHours = 0;
     this.baseHours = 0.0;
     this.overtimeHours = 0.0;
     //default cardwidth should be 160. If anything else its for testing
-    this.cardWidth = "35";
+    this.cardWidth = "160";
     if (isMobileOnly) {
-      this.cardWidth = "35";
+      this.cardWidth = "40";
     }
     if (isTablet) {
       this.cardWidth = "80";
@@ -121,6 +125,7 @@ export class App extends React.Component {
     }
     return timeArr;
   }
+
   getColors() {
     var today = new Date();
     var hourNow = today.getHours();
@@ -148,20 +153,29 @@ export class App extends React.Component {
       return ["#000", "#FFF"];
     }
   }
-  pad(n, width, z) {
-    z = z || "0";
-    n = n + "";
-    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
-  }
+
   getBaseHours() {
     if (this.totalHours > this.state.hourCutoff) {
       this.overtimeHours = this.totalHours - this.state.hourCutoff;
       this.baseHours = this.state.hourCutoff;
+    } else {
+      this.baseHours = this.totalHours;
+      this.overtimeHours = 0.0;
     }
   }
-  addToHours(h) {
-    //this.totalHours +=h;
+  addToHours(h, whole) {
+    if (whole) {
+      this.totalHours = h;
+    } else {
+      this.totalHours = this.totalHours + h;
+    }
+    this.getBaseHours();
+
+    this.setState({
+      totalHours: h
+    });
   }
+
   async getPunches(ppId) {
     if (ppId != -1) {
       const requestOptions = {
@@ -198,6 +212,7 @@ export class App extends React.Component {
     var punches = await this.getPunches(pp.id);
     var sd = pp.startDay.toString().substring(0, 10);
     let newJob = JSON.parse(JSON.stringify(job));
+    this.getBaseHours();
     this.setState({
       ppId: pp.id,
       startsAt: sa,
@@ -270,6 +285,7 @@ export class App extends React.Component {
   }
   render() {
     this.getBaseHours();
+    console.log(this.totalHours);
     var dayRefs = [];
     var weekOne = [];
     var weekTwo = [];
@@ -362,6 +378,24 @@ export class App extends React.Component {
       );
     }
     this.dayRefs = dayRefs;
+    var payPeriod = "";
+    if (this.state.status != 0) {
+      payPeriod = (
+        <PayPeriod
+          id={this.state.ppId}
+          startsAt={this.state.startsAt}
+          startsDate={this.state.startsDate}
+          doubleWeek={this.state.doubleWeek}
+          colors={this.state.colors}
+          openPopup={this.openPopup.bind(this)}
+          cardWidth={this.cardWidth}
+          payRate={this.state.payRate}
+          punches={this.state.punches}
+          addToHours={this.addToHours.bind(this)}
+          key={this.state.punches}
+        />
+      );
+    }
     return (
       <div className="App">
         <BackView colorBg={this.state.colors} />
@@ -376,14 +410,22 @@ export class App extends React.Component {
             data={this.state.popData}
             liftState={this.liftState.bind(this)}
             closePopup={this.closePopup.bind(this)}
+            addFn={this.addToHours.bind(this)}
           />
         ) : null}
-        <div class="menuContainer">
-          {/*<img
-            src="https://static.thenounproject.com/png/3107464-200.png"
-            id="otime_icon"
-            alt="otime_icon"
-         />*/}
+        <div
+          class={this.state.status != 0 ? "menuContainer" : "loginContainer"}
+          style={{
+            marginLeft:
+              Number(this.cardWidth) > 40 || this.state.status == 0
+                ? "20%"
+                : "0%",
+            marginRight:
+              Number(this.cardWidth) > 40 || this.state.status == 0 > 40
+                ? "20%"
+                : "0%"
+          }}
+        >
           <Banner
             status={this.state.status}
             id={this.state.id}
@@ -392,6 +434,17 @@ export class App extends React.Component {
             updFn={this.updateUser.bind(this)}
             showJobFn={this.openJobs.bind(this)}
             closeJobFn={this.closeJobs.bind(this)}
+            colors={this.state.colors}
+            baseHours={this.baseHours}
+            overtimeHours={this.overtimeHours}
+            totalHours={this.totalHours}
+            payRate={this.state.payRate}
+            multiplier={this.state.multiplier}
+            daySelect={daySelect}
+            setJob={this.setJob.bind(this)}
+            currJob={this.state.currJob}
+            errorColor={this.state.errorColor}
+            errorMessage={this.state.errorMessage}
           />
         </div>
 
@@ -403,108 +456,8 @@ export class App extends React.Component {
           />
         ) : null}
         <div class={this.state.foregr}>
-          <Select
-            id="sbSearch"
-            options={daySelect}
-            onChange={this.setJob.bind(this)}
-            placeholder={this.state.currJob.name}
-          />
           <br />
-          <PayPeriod
-            id={this.state.ppId}
-            startsAt={this.state.startsAt}
-            startsDate={this.state.startsDate}
-            doubleWeek={this.state.doubleWeek}
-            colors={this.state.colors}
-            openPopup={this.openPopup.bind(this)}
-            addToHours={this.addToHours.bind(this)}
-            cardWidth={this.cardWidth}
-            payRate={this.state.payRate}
-            punches={this.state.punches}
-            addToHours={this.addToHours.bind(this)}
-            key={this.state.punches}
-          />
-          <div class="menuContainer" style={{ position: "absolute" }}>
-            <br />
-            <h3
-              style={{
-                background: this.state.colors[0]
-              }}
-            >
-              Base Time:{" "}
-            </h3>
-            <p className="timelabel1">
-              {this.baseHours.toFixed(2) + " hours "}
-            </p>
-            <br />
-            <br />
-            <h3
-              style={{
-                background: this.state.colors[0]
-              }}
-            >
-              Over Time:{" "}
-            </h3>
-            <p className="timelabel2">
-              {this.pad(this.overtimeHours.toFixed(2), 5) + " hours "}
-            </p>
-            <br />
-            <hr class="leftHr" />
-            <br />
-            <h3
-              style={{
-                background: this.state.colors[1]
-              }}
-            >
-              Total Time:{" "}
-            </h3>
-            <p className="timelabel3">
-              {this.totalHours.toFixed(2) + " hours "}
-            </p>
-            <h4>Pay Rate: ${this.state.payRate.toFixed(2)}</h4>
-            <br />
-            <h3
-              style={{
-                background: this.state.colors[0]
-              }}
-            >
-              Base Pay:{" "}
-            </h3>
-            <p className="payLabel1">
-              {"$" + (this.totalHours * this.state.payRate).toFixed(2)}
-            </p>
-            <br />
-            <br />
-            <h3
-              class="olabel"
-              style={{
-                background: this.state.colors[0]
-              }}
-            >
-              O-time Pay:{" "}
-            </h3>
-            <p className="payLabel2">
-              {"$" +
-                (
-                  this.overtimeHours *
-                  this.state.payRate *
-                  this.state.multiplier
-                ).toFixed(2)}
-            </p>
-            <br />
-            <hr class="rightHr" />
-            <br />
-            <h3
-              style={{
-                background: this.state.colors[1]
-              }}
-            >
-              Total Pay:{" "}
-            </h3>
-            <p className="payLabel3">
-              {"$" + (this.totalHours * this.state.payRate).toFixed(2)}
-            </p>
-          </div>
+          {payPeriod}
         </div>
       </div>
     );

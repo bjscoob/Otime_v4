@@ -1,5 +1,7 @@
 import React from "react";
 import sha256 from "crypto-js/sha256";
+import Select from "react-select";
+import StaggeredMotion from "react-motion";
 
 export default class Banner extends React.Component {
   constructor(props) {
@@ -10,11 +12,15 @@ export default class Banner extends React.Component {
       email: this.props.email,
       name: this.props.name,
       count: 0,
-      errOn: "none",
-      errorMsg: ""
+      errColor: "green",
+      errorMsg: "Success!"
     };
   }
-
+  pad(n, width, z) {
+    z = z || "0";
+    n = n + "";
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
   async login() {
     const requestOptions = {
       method: "POST",
@@ -57,11 +63,9 @@ export default class Banner extends React.Component {
       requestOptions
     ).then((response) => response.data);
   }
-  flagError(t) {
-    this.setState({
-      errOn: "block",
-      errorMsg: t
-    });
+  flagError(isError, t) {
+    this.errorColor = isError ? "red" : "green";
+    this.errorMsg = t;
   }
 
   goToLogin = (event) => {
@@ -84,10 +88,11 @@ export default class Banner extends React.Component {
   };
   getBannerContent(statusCode) {
     var defaultBanner = <div>Unable to Render Banner</div>;
+    this.overtime = this.props.overtimeHours * this.props.multiplier;
     var loginBanner = (
       <div>
-        <p class="error" style={{ display: this.state.errOn }}>
-          {this.state.errorMsg}
+        <p class="error" style={{ color: this.props.errorColor }}>
+          {this.props.errorMsg}
         </p>
         <div class="loginFormContainer">
           <form>
@@ -121,6 +126,7 @@ export default class Banner extends React.Component {
         </div>
       </div>
     );
+
     var registerBanner = (
       <div>
         <div class="loginFormContainer">
@@ -165,21 +171,120 @@ export default class Banner extends React.Component {
     );
     var homeBanner = (
       <div>
-        <h1 id="welcome_banner">Welcome Back</h1>
-        <h2 id="name_label">{this.state.name}</h2>
-        <div class="forgregCont">
-          <button
-            class="forgReg"
-            onClick={() => this.props.showJobFn(this.state.id)}
-          >
-            Manage Jobs...
-          </button>
-          <button class="forgReg" onClick={this.goToLogin}>
-            Settings...
-          </button>
-          <button class="forgReg" onClick={this.goToLogin}>
-            Logout
-          </button>
+        <div class="row">
+          <div class="column3">
+            <h4>Pay Rate: ${this.props.payRate.toFixed(2)}</h4>
+            <Select
+              id="sbSearch"
+              options={this.props.daySelect}
+              onChange={this.props.setJob.bind(this)}
+              placeholder="Job..."
+            />
+          </div>
+          <div class="column2">
+            <p class={this.props.errorColor} style={{ marginBottom: "-30px" }}>
+              {this.props.errorMessage}
+            </p>
+            <h1 id="welcome_banner">Welcome Back</h1>
+            <h2 id="name_label">{this.state.name}</h2>
+          </div>
+          <div class="row">
+            <div class="column1">
+              <h3
+                style={{
+                  background: this.props.colors[0]
+                }}
+              >
+                Base Time:{" "}
+              </h3>
+              <br />
+              <p className="timelabel1">
+                {this.props.baseHours.toFixed(2) + " hours "}
+              </p>
+              <br />
+              <h3
+                style={{
+                  background: this.props.colors[0]
+                }}
+              >
+                Over Time:{" "}
+              </h3>
+              <br />
+              <p className="timelabel2">
+                {this.pad(this.props.overtimeHours.toFixed(2), 5) + " hours "}
+              </p>
+              <br />
+              <hr class="leftHr" />
+              <h3
+                style={{
+                  background: this.props.colors[1]
+                }}
+              >
+                Total Time:{" "}
+              </h3>
+              <br />
+              <p className="timelabel3">
+                {this.props.totalHours.toFixed(2) + " hours "}
+              </p>
+            </div>
+            <div class="column1">
+              <h3
+                style={{
+                  background: this.props.colors[0]
+                }}
+              >
+                Base Pay:{" "}
+              </h3>
+              <br />
+              <p className="payLabel1">
+                {"$" + (this.props.baseHours * this.props.payRate).toFixed(2)}
+              </p>
+              <br />
+              <h3
+                class="olabel"
+                style={{
+                  background: this.props.colors[0]
+                }}
+              >
+                O-time Pay:{" "}
+              </h3>
+              <br />
+              <p className="payLabel2">
+                {"$" + (this.overtime * this.props.payRate).toFixed(2)}
+              </p>
+              <br />
+              <hr class="rightHr" />
+              <h3
+                style={{
+                  background: this.props.colors[1]
+                }}
+              >
+                Total Pay:{" "}
+              </h3>
+              <br />
+              <p className="payLabel3">
+                {"$" +
+                  (
+                    (this.props.baseHours + this.overtime) *
+                    this.props.payRate
+                  ).toFixed(2)}
+              </p>
+            </div>
+            <div class="forgregCont">
+              <button
+                class="menuItem"
+                onClick={() => this.props.showJobFn(this.state.id)}
+              >
+                Jobs
+              </button>
+              <button class="menuItem" onClick={this.goToLogin}>
+                Settings
+              </button>
+              <button class="menuItem" onClick={this.goToLogin}>
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -217,7 +322,7 @@ export default class Banner extends React.Component {
     return this.getBannerContent(this.state.status);
   }
   componentDidUpdate(prevProps) {
-    if (this.props.status !== prevProps.status) {
+    if (this.props !== prevProps) {
       this.setState({
         status: this.props.status,
         id: this.props.id,

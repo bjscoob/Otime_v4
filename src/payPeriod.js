@@ -12,6 +12,7 @@ export default class PayPeriod extends React.Component {
     };
     this.times = [];
     this.totals = 0.0;
+    this.dayTime = 0.0;
   }
   filterTimesAt(moda) {
     var timeArr = [];
@@ -76,8 +77,8 @@ export default class PayPeriod extends React.Component {
           console.log("Open Punch Day Card: " + moda);
         }
       }
-      this.totals = totalTime;
-      this.props.addToHours(totalTime);
+      this.dayTime = totalTime;
+      this.totals = this.totals + totalTime;
     }
     return timeArr;
   }
@@ -94,6 +95,8 @@ export default class PayPeriod extends React.Component {
           this.times.push(new Time(punch.id, punch.start, true, false));
         }
       });
+
+      this.times[this.times.length - 1].hasStop = true;
     }
     var dayRefs = [];
     var weekOne = [];
@@ -152,6 +155,7 @@ export default class PayPeriod extends React.Component {
       ) {
         stop = true;
       }
+      this.dayTime = 0.0;
       var preTimes = this.filterTimesAt(moda);
       var postTimes = this.getTotalTime(preTimes, moda);
       weeks[b].push(
@@ -163,7 +167,7 @@ export default class PayPeriod extends React.Component {
           moda={moda}
           color={this.props.colors[1]}
           day={dayOfWeek}
-          elapsedTime={this.totals}
+          elapsedTime={this.dayTime}
           times={postTimes}
           stop={stop}
           payPeriod={this.props.id}
@@ -172,7 +176,6 @@ export default class PayPeriod extends React.Component {
           colorBg={this.props.colors}
         />
       );
-      this.totals = 0;
 
       if (dayOfWeek == "Sat") {
         b++;
@@ -190,4 +193,7 @@ export default class PayPeriod extends React.Component {
     return dayRefs;
   }
   componentDidUpdate(prevProps) {}
+  componentDidMount() {
+    this.props.addToHours(this.totals, true);
+  }
 }

@@ -22,6 +22,13 @@ export default class Popup extends React.Component {
       tempArr: []
     };
     this.inputLen = 0;
+    this.timeDiffs = [];
+    this.errorColor = "green";
+    this.errorMessage = "";
+  }
+  alert(color, msg) {
+    this.errorColor = color;
+    this.errorMessage = msg;
   }
   addTime(id, date, isStartPunch) {
     //(id, date, isStartPunch, isComplete)
@@ -36,7 +43,21 @@ export default class Popup extends React.Component {
       data: a
     });
   }
+  timeDiff(before, after, key) {
+    var aArr = after.toString().split(":");
+    var bArr = before.toString().split(":");
+    var aHour = Number(aArr[0]) + Number(aArr[1] / 60);
+    var bHour = Number(bArr[0]) + Number(bArr[1] / 60);
+    var diff = bHour - aHour;
+    var ref = this.timeDiffs.find((x) => x.key == key);
+    if (ref == undefined) {
+      this.timeDiffs.push({ key: key, value: diff });
+    } else {
+      ref.value = diff;
+    }
+  }
   toggleOn(e) {
+    this.initTime = e.target.placeholder;
     setTimeout(
       function () {
         //Start the timer
@@ -56,6 +77,7 @@ export default class Popup extends React.Component {
       150
     );
   }
+
   toggleOff(e) {
     setTimeout(
       function () {
@@ -78,6 +100,12 @@ export default class Popup extends React.Component {
               key: id + "|" + e.target.className,
               value: id + "|" + e.target.value + ":00|" + e.target.className
             });
+            this.timeDiff(
+              this.initTime,
+              e.target.value,
+              id + "|" + e.target.className
+            );
+            console.log(this.timeDiffs);
           }
         }
         var id = e.target.id.split("|")[0];
@@ -182,6 +210,11 @@ export default class Popup extends React.Component {
       await this.editPunch(a[0], a[1], a[2]);
     }
     this.props.liftState();
+    var diff = 0;
+    this.timeDiffs.map((d) => {
+      diff = diff + d.value;
+    });
+    this.props.addFn(diff, false);
   }
   async editPunch(id, time, isStart) {
     var d = this.props.dt;
@@ -205,9 +238,12 @@ export default class Popup extends React.Component {
       );
       var dataTEXT = await response.text();
       this.props.liftState();
-      try {
-        console.log(dataTEXT);
-      } catch (e) {}
+      if (dataTEXT == "Success") {
+        this.alert("green", dataTEXT);
+      } else {
+        this.alert("red", dataTEXT);
+      }
+      setTimeout(() => this.alert("nuetral", ""), 5000);
     }
   }
   subtractTime(id, tc) {
@@ -302,9 +338,8 @@ export default class Popup extends React.Component {
           <button className="closeBtn" onClick={this.props.closePopup}>
             x
           </button>
-          <h1 id="popBanner" style={{ color: this.props.colorBg[1] }}>
-            {this.props.day}
-          </h1>
+          <h1 id="popBanner">{this.props.day}</h1>
+          <p class={this.errorColor}>{this.errorMessage}</p>
           <button class="punchIn" onClick={this.createPunch.bind(this)}>
             punch in
           </button>

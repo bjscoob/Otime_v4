@@ -45,7 +45,13 @@ export default class DayCard extends React.Component {
         );
       }
     } catch (e) {}
-    content = <div>{times}</div>;
+    content = <div class="dayCardContent">{times}</div>;
+
+    var money =
+      "$" +
+      Number(this.props.payRate * Number(this.props.elapsedTime)).toFixed(2);
+    var bigMoney = money.split(".")[0];
+    var lilMoney = "." + money.split(".")[1];
     return (
       <div key={this.props.times}>
         <ButtonBase
@@ -88,7 +94,7 @@ export default class DayCard extends React.Component {
               </Typography>
               <Typography>
                 <div class="dayHours">
-                  {Number(this.props.elapsedTime).toFixed(2) + " hrs"}
+                  {Number(this.props.elapsedTime).toFixed(2) + "hrs"}
                 </div>
               </Typography>
               <Typography>
@@ -99,11 +105,21 @@ export default class DayCard extends React.Component {
                 <hr />
               </Typography>
               <Typography>
-                <div class="dayPay">
-                  {"$" +
-                    Number(
-                      this.props.payRate * Number(this.props.elapsedTime)
-                    ).toFixed(2)}
+                <div
+                  class="dayPayBig"
+                  style={{
+                    color: this.props.elapsedTime > 0 ? "green" : "grey"
+                  }}
+                >
+                  {bigMoney}
+                </div>
+                <div
+                  class="dayPayLil"
+                  style={{
+                    color: this.props.elapsedTime > 0 ? "green" : "grey"
+                  }}
+                >
+                  {lilMoney}
                 </div>
               </Typography>
             </CardContent>

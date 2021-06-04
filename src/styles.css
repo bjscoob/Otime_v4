@@ -15,6 +15,9 @@
   margin: auto;
 }
 .foreground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   animation: fadeIn 1s;
   -webkit-animation: fadeIn 1s;
   -moz-animation: fadeIn 1s;
@@ -37,9 +40,25 @@
 #welcome_banner {
   text-align: right;
   margin-right: 2%;
+  margin-bottom: -10px;
 }
-.error {
+.red,
+.green {
+  transition: 3s ease-in;
+  animation: fadeOut 7s;
+  -webkit-animation: fadeOut 7s;
+  -moz-animation: fadeOut 7s;
+  -o-animation: fadeOut 7s;
+  -ms-animation: fadeOut 7s;
+}
+.red {
   color: red;
+}
+.green {
+  color: green;
+}
+.nuetral {
+  color: transparent;
 }
 .loginLabel {
   text-align: center;
@@ -56,12 +75,11 @@
   box-shadow: inset 0 0 1px black;
 }
 .loginFormContainer,
-.forgregCont,
 .btnContainer {
   padding: 5px;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 .loginSubmit {
   display: flex;
@@ -69,7 +87,6 @@
   padding: 5px;
   font-size: 10px;
   width: 80px;
-  margin-right: 40px;
   border: 1px solid black;
   border-radius: 5px;
   margin-top: 5px;
@@ -86,10 +103,19 @@ input:focus {
   background: transparent;
   border: none;
   font-size: 12px;
-  margin-left: 10px;
+  margin-bottom: 25px;
   text-align: center;
 }
+.menuItem {
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  margin-left: 10px;
+  margin-bottom: 25px;
+  text-align: right;
+}
 .forgReg:hover,
+.menuItem:hover,
 #name_label {
   color: grey;
   font-size: 1rem;
@@ -101,9 +127,9 @@ input:focus {
 }
 #sbSearch {
   color: purple;
-  width: 50%;
+  width: 100%;
   display: inline-block;
-  font-size: 1rem;
+  font-size: 12px;
   text-align: center;
 }
 #leftSect,
@@ -119,6 +145,46 @@ input:focus {
 #rightSect {
   text-align: left;
 }
+.column1,
+.column2,
+.column3,
+.row,
+.menuItem {
+  box-sizing: border-box;
+}
+/* Create three equal columns that floats next to each other */
+.column1 {
+  float: left;
+  width: 40%;
+}
+.menuItem {
+  float: left;
+  width: 17%;
+}
+.column2 {
+  float: left;
+  width: 60%;
+  margin-top: -15px;
+}
+.column3 {
+  float: left;
+  width: 40%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column1 {
+    margin-top: 5px;
+    width: 35%;
+  }
+}
 h3 {
   font: bold arial, sans-serif;
   position: relative;
@@ -126,7 +192,7 @@ h3 {
   border-radius: 5px;
   padding: 1px 5px;
   letter-spacing: 2px;
-  text-align: left;
+  text-align: center;
   color: white;
   border: 2px solid white;
   text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);
@@ -134,9 +200,12 @@ h3 {
   -moz-background-clip: text;
   background-clip: text;
   box-shadow: 0px 0px 4px black;
+  font-size: 10px;
 }
 h4 {
   margin-bottom: -2px;
+  margin-top: -1px;
+  font-size: 12px;
   text-align: left;
 }
 h4.leftSect {
@@ -152,11 +221,20 @@ h4.rightSect {
   border-radius: 12px;
   border: 2px solid rgba(189, 195, 199, 0.5);
   box-shadow: 0px 0px 6px BLACK;
+
+  transition: all 0.5s linear;
+}
+.loginContainer {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2px 2px;
+  margin: 10px 0px;
+  border-radius: 12px;
+  margin-top: 15%;
   margin-left: 20%;
   margin-right: 20%;
-}
-.olabel {
-  margin-left: -25px;
+  border: 2px solid rgba(189, 195, 199, 0.5);
+  box-shadow: 0px 0px 6px BLACK;
+  transition: all 0.5s linear;
 }
 .timelabel1,
 .timelabel2,
@@ -164,11 +242,12 @@ h4.rightSect {
 .payLabel1,
 .payLabel2,
 .payLabel3 {
-  display: inline;
+  display: inline-block;
   text-align: right;
   font-weight: 600;
-  font-size: 15px;
-  margin-left: 5px;
+  font-size: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .timelabel1,
@@ -188,6 +267,7 @@ h4.rightSect {
 .leftHr,
 .rightHr {
   margin-top: 4px;
+  margin-bottom: 4px;
 }
 .card {
   border: 1px solid grey;
@@ -195,20 +275,15 @@ h4.rightSect {
   transition: all 0.25s linear;
 }
 .card:hover {
-  box-shadow: 0px 0px 20px white;
-  color: white;
 }
-
-.weekView {
-  display: grid;
+.dayCardContent {
+  margin-left: -2px;
 }
 .week1,
 .week2,
 .week3 {
-  width: 300px;
   display: flex;
   margin-top: 15px;
-  margin-left: -5px;
 }
 .week1 {
   align-items: flex-end;
@@ -244,20 +319,36 @@ hr.endPunch {
   font-style: italic;
 }
 .dayPay,
-.dayHours,
 .moda {
   font-size: 9px;
   margin-left: -3px;
-  margin-right: -3px;
 }
-.dayPay {
-  color: green;
+
+.dayHours {
+  font-size: 9px;
+  margin-left: -50px;
+}
+.dayPayBig {
+  text-align: right;
+  display: block;
+  font-weight: 900;
+  font-size: 12px;
+  text-shadow: 0px 0px 8px white;
+  margin-right: 4%;
+}
+.dayPayLil {
+  text-align: right;
+  margin-top: -7px;
+  display: block;
+  font-weight: 900;
+  font-size: 9px;
+  text-shadow: 0px 0px 8px white;
 }
 .dayPay,
 .dayHours,
 .moda,
 .dayName {
-  text-align: center;
+  text-align: right;
 }
 h1 {
   font-size: 22px;
@@ -271,6 +362,7 @@ hr {
 }
 .dayName,
 .dayHours {
+  margin-left: -3px;
   margin-top: -5px;
 }
 .popup {
@@ -401,7 +493,7 @@ hr {
   padding: 0px;
   border: NONE;
   color: white;
-  margin-bottom: 5px;
+  padding: 3px;
   cursor: pointer;
   -moz-box-shadow: 0 0 1px black;
   -webkit-box-shadow: 0 0 1px black;
