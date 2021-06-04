@@ -2,13 +2,14 @@ import React from "react";
 import JobBtn from "./jobBtn";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
+import moment from "moment";
 require("react-datepicker/dist/react-datepicker.css");
 
 export default class JobsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: "",
+      currJobid: "",
       name: "",
       payrate: "",
       isWeekly: "",
@@ -17,7 +18,8 @@ export default class JobsPage extends React.Component {
       aOrP: "",
       startDate: "",
       endDate: "",
-      formVisible: "none"
+      formVisible: "none",
+      hourCutoff: 40.0
     };
     this.days = [
       { value: "Sunday", label: "Sunday" },
@@ -36,7 +38,7 @@ export default class JobsPage extends React.Component {
   openJob(job) {
     var pArr = job.periodStarts.split(" ");
     this.setState({
-      id: job.id,
+      currJobid: job.id,
       name: job.name,
       payrate: job.payrate,
       isWeekly: job.isWeekly,
@@ -47,6 +49,8 @@ export default class JobsPage extends React.Component {
       endDate: job.endDate ? job.endDate : "",
       formVisible: "block"
     });
+
+    this.inputLen = 0;
   }
   setName = (event) => {
     this.setState({ name: event.target.value });
@@ -54,14 +58,47 @@ export default class JobsPage extends React.Component {
   setPayrate = (event) => {
     this.setState({ payrate: event.target.value });
   };
+  sethourCutoff = (event) => {
+    if (event.target.value == "") {
+      this.setState({ hourCutoff: 40.0 });
+    } else {
+      this.setState({ hourCutoff: event.target.value });
+    }
+  };
   setWeekly = (event) => {
     this.setState({ isWeekly: event.target.value });
   };
   setDay(selectedDay) {
     this.setState({ day: selectedDay.value });
   }
-  setTime = (event) => {
-    this.setState({ time: event.target.value });
+  is_numeric(c) {
+    if (c >= "0" && c <= "9") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  setTime = (e) => {
+    var inputText = e.target.value;
+    //test the string for numeric
+    var lastChar = inputText[inputText.length - 1];
+    if (!this.is_numeric(lastChar) && !(lastChar === ":")) {
+      e.target.value = inputText.toString().substring(0, inputText.length - 1);
+      return;
+    }
+    if (inputText.length == 2 && this.inputLen != 3) {
+      this.inputLen = 3;
+      e.target.value = inputText + ":";
+    }
+    if (inputText.length == 3 && this.inputLen == 4) {
+      this.inputLen = 2;
+      e.target.value = inputText.toString().substring(0, 2);
+    }
+    if (inputText.length == 3 && this.is_numeric(lastChar)) {
+      e.target.value = inputText.toString().substring(0, 2) + ":" + lastChar;
+    }
+    this.inputLen = e.target.value.length;
+    this.setState({ time: e.target.value });
   };
   setAorP(AorP) {
     this.setState({ aOrp: AorP.value });
@@ -70,10 +107,37 @@ export default class JobsPage extends React.Component {
     return this.state.day + " " + this.state.time + " " + this.state.aOrp;
   }
   setStartDate(date) {
-    this.setState({ startDate: date.toString() });
+    var dateArr = date.toString().split(" ");
+    var dateStr =
+      dateArr[1] + " " + dateArr[2] + " " + dateArr[3] + " " + dateArr[4];
+    this.setState({ startDate: moment(dateStr).format("YYYY-MM-DD HH:mm:ss") });
   }
   setEndDate(date) {
-    this.setState({ endDate: date.toString() });
+    var dateArr = date.toString().split(" ");
+    var dateStr =
+      dateArr[1] + " " + dateArr[2] + " " + dateArr[3] + " " + dateArr[4];
+    this.setState({ endDate: moment(dateStr).format("YYYY-MM-DD HH:mm:ss") });
+  }
+  updText(e) {
+    var inputText = e.target.value;
+    //test the string for numeric
+    var lastChar = inputText[inputText.length - 1];
+    if (!this.is_numeric(lastChar) && !(lastChar === ":")) {
+      e.target.value = inputText.toString().substring(0, inputText.length - 1);
+      return;
+    }
+    if (inputText.length == 2 && this.inputLen != 3) {
+      this.inputLen = 3;
+      e.target.value = inputText + ":";
+    }
+    if (inputText.length == 3 && this.inputLen == 4) {
+      this.inputLen = 2;
+      e.target.value = inputText.toString().substring(0, 2);
+    }
+    if (inputText.length == 3 && this.is_numeric(lastChar)) {
+      e.target.value = inputText.toString().substring(0, 2) + ":" + lastChar;
+    }
+    this.inputLen = e.target.value.length;
   }
   async createJob() {
     var postData = {
@@ -81,6 +145,7 @@ export default class JobsPage extends React.Component {
       userId: this.props.id,
       name: this.state.name,
       payrate: this.state.payrate,
+      hourCutoff: this.state.hourCutoff,
       isWeekly: this.state.isWeekly,
       period: this.getPeriod(),
       startDate: this.state.startDate
@@ -91,6 +156,7 @@ export default class JobsPage extends React.Component {
         userId: this.props.id,
         name: this.state.name,
         payrate: this.state.payrate,
+        hourCutoff: this.state.hourCutoff,
         isWeekly: this.state.isWeekly,
         period: this.getPeriod(),
         startDate: this.state.endDate,
@@ -112,6 +178,36 @@ export default class JobsPage extends React.Component {
     );
     var result = await response.text();
   }
+  async saveJob() {
+    //	name	payrate	hourCutoff	isWeekly
+    //periodStarts	startDate	endDate id
+    var postData = {
+      jobAction: "4",
+      id: this.state.currJobid,
+      name: this.state.name,
+      hourCutoff: this.state.hourCutoff,
+      payrate: this.state.payrate,
+      isWeekly: this.state.isWeekly,
+      periodStarts: this.getPeriod(),
+      startDate: this.state.endDate,
+      endDate: this.state.endDate
+    };
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify(postData)
+    };
+    var response = await fetch(
+      "https://jax-apps.com/otime_app/api/job.php",
+      requestOptions
+    );
+    var result = await response.text();
+    console.log(result);
+  }
   render() {
     var listItems = [];
     for (var a = 0; a < this.props.jobs.length; a++) {
@@ -128,7 +224,12 @@ export default class JobsPage extends React.Component {
       <div style={{ marginTop: 40 }}>
         <button
           class="newJobBtn"
-          onClick={() => this.setState({ formVisible: "block" })}
+          onClick={() =>
+            this.setState({
+              currJobId: "",
+              formVisible: "block"
+            })
+          }
         >
           {" "}
           New Job +
@@ -153,6 +254,16 @@ export default class JobsPage extends React.Component {
               />{" "}
               /hr
             </div>
+            <div class="payrateBox">
+              Overtime After:
+              <input
+                class="payRateBox"
+                type="text"
+                placeholder={Number(this.state.hourCutoff).toFixed(2)}
+                onChange={this.sethourCutoff.bind(this)}
+              />
+              hours
+            </div>
             Payperiod Starts:
             <br />
             <div style={{ width: "100%" }}>
@@ -167,6 +278,7 @@ export default class JobsPage extends React.Component {
                 onChange={this.setTime.bind(this)}
                 class="timeBox"
                 type="text"
+                maxLength="5"
                 placeholder={this.state.time}
               />
               <div style={{ width: "100%" }}>
@@ -179,33 +291,14 @@ export default class JobsPage extends React.Component {
               </div>
             </div>
             <br />
-            <label class="container">
-              Weekly
-              <input
-                type="radio"
-                name="Weekly"
-                checked={this.state.isWeekly == 1}
-                value="1"
-                onChange={this.setWeekly.bind(this)}
-              />
-              <span class="checkmark"></span>
-            </label>
-            <label class="container">
-              Bi-Weekly
-              <input
-                type="radio"
-                name="Bi-Weekly"
-                checked={this.state.isWeekly == 0}
-                value="0"
-                onChange={this.setWeekly.bind(this)}
-              />
-              <span class="checkmark"></span>
-            </label>
+            <button class="weeklyRadio">Weekly</button>
+            <button class="weeklyRadio">Bi-Weekly</button>
             <p class="dateLabel"> Start Date:</p>
             <div class="dateCont">
               <DatePicker
                 onChange={(date) => this.setStartDate(date)}
                 placeholderText={this.state.startDate}
+                dateFormat="YYYY-MM-DD HH:mm:ss"
               />
             </div>
             <p class="dateLabel">End Date:</p>
@@ -215,7 +308,14 @@ export default class JobsPage extends React.Component {
                 placeholderText={this.state.endDate}
               />
             </div>
-            <button onClick={this.createJob.bind(this)} class="saveJobBtn">
+            <button
+              onClick={
+                this.state.currJobid == ""
+                  ? this.createJob.bind(this)
+                  : this.saveJob.bind(this)
+              }
+              class="saveJobBtn"
+            >
               {" "}
               Save
             </button>

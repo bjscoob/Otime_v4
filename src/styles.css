@@ -614,10 +614,6 @@ input.breakPunch {
 .jobsCont {
   width: 40%;
   height: 400px;
-  -moz-box-shadow: 0 0 5px black;
-  -webkit-box-shadow: 0 0 5px black;
-  box-shadow: 0 0 5px black;
-  background: rgba(255, 255, 255, 0.5);
   z-index: 150;
   padding: 10px;
 }
