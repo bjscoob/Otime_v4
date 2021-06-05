@@ -284,6 +284,7 @@ export class App extends React.Component {
     });
   }
   render() {
+    console.log("status: " + this.state.status);
     this.getBaseHours();
     console.log(this.totalHours);
     var dayRefs = [];
@@ -379,7 +380,7 @@ export class App extends React.Component {
     }
     this.dayRefs = dayRefs;
     var payPeriod = "";
-    if (this.state.status != 0) {
+    if (this.state.status == 1) {
       payPeriod = (
         <PayPeriod
           id={this.state.ppId}
