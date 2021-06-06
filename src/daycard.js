@@ -27,7 +27,7 @@ export default class DayCard extends React.Component {
     this.elapsedTime = 0;
   }
   onMouseOver = () =>
-    this.setState({ fg: this.props.colorBg[0], bg: this.props.colorBg[1] });
+    this.setState({ fg: this.props.colorBg[1], bg: this.props.colorBg[0] });
   onMouseOut = () => this.setState({ fg: "black", bg: "white" });
 
   render() {
@@ -74,6 +74,7 @@ export default class DayCard extends React.Component {
               padding: 0,
               textAlign: "left",
               borderRadius: 0,
+              border: "4px solid "+this.props.colorBg[1],
               width: Number(this.props.cardWidth),
               marginRight: 3,
               float: "left"

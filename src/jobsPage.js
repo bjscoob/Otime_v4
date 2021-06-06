@@ -64,14 +64,36 @@ export default class JobsPage extends React.Component {
   setName = (event) => {
     this.setState({ name: event.target.value });
   };
-  setPayrate = (event) => {
-    this.setState({ payrate: event.target.value });
+  setPayrate = (e) => {
+    var inputText = e.target.value;
+    //test the string for numeric
+    var lastChar = inputText[inputText.length - 1];
+    var oldText = inputText.toString().substring(0, inputText.length - 1);
+    if (!this.is_numeric(lastChar) && !(lastChar === ".")) {
+      e.target.value = oldText;
+    }
+    //allow only 1 decimal
+    if (oldText.toString().includes(".") && lastChar === ".") {
+      e.target.value = oldText;
+    }
+    this.setState({ payrate: e.target.value });
   };
-  sethourCutoff = (event) => {
-    if (event.target.value == "") {
+  sethourCutoff = (e) => {
+    var inputText = e.target.value;
+    //test the string for numeric
+    var lastChar = inputText[inputText.length - 1];
+    var oldText = inputText.toString().substring(0, inputText.length - 1);
+    if (!this.is_numeric(lastChar) && !(lastChar === ".")) {
+      e.target.value = oldText;
+    }
+    //allow only 1 decimal
+    if (oldText.toString().includes(".") && lastChar === ".") {
+      e.target.value = oldText;
+    }
+    if (e.target.value == "") {
       this.setState({ hourCutoff: 40.0 });
     } else {
-      this.setState({ hourCutoff: event.target.value });
+      this.setState({ hourCutoff: e.target.value });
     }
   };
   setWeekly = (event) => {
@@ -160,15 +182,20 @@ export default class JobsPage extends React.Component {
     }
     this.inputLen = e.target.value.length;
   }
-  updText(e) {
+  updPay(e) {
     var inputText = e.target.value;
     //test the string for numeric
     var lastChar = inputText[inputText.length - 1];
+    var oldText = inputText.toString().substring(0, inputText.length - 1);
     if (!this.is_numeric(lastChar) || !(lastChar === ".")) {
-      e.target.value = inputText.toString().substring(0, inputText.length - 1);
+      e.target.value = oldText;
       return;
     }
-    this.inputLen = e.target.value.length;
+    //allow only 1 decimal
+    if (oldText.toString().includes(".") && lastChar === ".") {
+      e.target.value = oldText;
+      return;
+    }
   }
   checkData() {
     if (
@@ -227,21 +254,26 @@ export default class JobsPage extends React.Component {
         requestOptions
       );
       var result = await response.text();
-      var jobs = this.state.jobs;
-      jobs.push({
-        id: result,
-        userId: this.props.id,
-        name: this.state.name,
-        payrate: this.state.payrate,
-        hourCutoff: this.state.hourCutoff,
-        isWeekly: this.state.isWeekly,
-        resetsWeekly: this.state.resetsWeekly,
-        periodStarts: this.getPeriod(),
-        startDate: this.state.endDate,
-        endDate: this.state.endDate
-      });
+      console.log(result);
+      if (result == -1) {
+        console.log("Duplicate Name");
+      } else {
+        var jobs = this.state.jobs;
+        jobs.push({
+          id: result,
+          userId: this.props.id,
+          name: this.state.name,
+          payrate: this.state.payrate,
+          hourCutoff: this.state.hourCutoff,
+          isWeekly: this.state.isWeekly,
+          resetsWeekly: this.state.resetsWeekly,
+          periodStarts: this.getPeriod(),
+          startDate: this.state.endDate,
+          endDate: this.state.endDate
+        });
 
-      this.setState({ jobs: jobs });
+        this.setState({ jobs: jobs });
+      }
     }
   };
   deleteJob = async (event) => {
@@ -382,7 +414,7 @@ export default class JobsPage extends React.Component {
         <div class="jobPage">
           <div class="jobsCont">{listItems}</div>
           <form class="jobForm" style={{ display: this.state.formVisible }}>
-            <div class="nameLabel">Name:</div>
+            <div class="nameLabel">Name*:</div>
             <input
               type="text"
               placeholder={this.state.name}
@@ -391,7 +423,7 @@ export default class JobsPage extends React.Component {
             />
             <br />
             <br />
-            <div class="ppLabel">Payrate:</div>
+            <div class="ppLabel">Payrate*:</div>
             <br />
 
             <div class="payrateBox">
@@ -405,7 +437,7 @@ export default class JobsPage extends React.Component {
               /hr
             </div>
             <div class="payrateBox">
-              O-time after:
+              O-time after*:
               <input
                 class="payrateBoxInp"
                 type="text"
@@ -415,7 +447,7 @@ export default class JobsPage extends React.Component {
               />
               hours
             </div>
-            <div class="ppLabel">Payperiod Starts:</div>
+            <div class="ppLabel">Payperiod Starts*:</div>
             <br />
             <div style={{ width: "100%", boxShadow: "0px 0px 5px black" }}>
               <Select
@@ -460,7 +492,7 @@ export default class JobsPage extends React.Component {
               Bi-Weekly
             </button>
             {resetsWeeklyCont}
-            <p class="dateLabel"> First PayPeriod:</p>
+            <p class="dateLabel"> First PayPeriod*:</p>
             <div class="dateCont">
               <DatePicker
                 onChange={(date) => this.setStartDate(date)}

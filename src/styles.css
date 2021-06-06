@@ -709,12 +709,13 @@ input.breakPunch {
   border: none;
   color: white;
 }
-.weeklyRadioOn {
-  background: black;
-}
 .weeklyRadioOff {
+  background: #d3d3d3;
+  color: #696969;
+}
+.weeklyRadioOn {
   background: white;
-  color: grey;
+  color: black;
   box-shadow: 0px 0px 5px black;
 }
 .weeklyRadioOff:hover,

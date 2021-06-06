@@ -64,7 +64,6 @@ export default class Banner extends React.Component {
     ).then((response) => response.data);
   }
   async forgot() {
-    console.log(this.state.email);
     const requestOptions = {
       method: "POST",
       headers: {
@@ -75,6 +74,7 @@ export default class Banner extends React.Component {
         email: this.state.email
       })
     };
+    console.log(requestOptions);
     var response = await fetch(
       "https://jax-apps.com/otime_app/api/forgot.php",
       requestOptions
