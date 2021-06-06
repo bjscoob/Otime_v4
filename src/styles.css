@@ -37,19 +37,31 @@
   left: 2%;
   width: 20%;
 }
+.msgCont {
+  margin-top: 18px;
+  margin-bottom: -10px;
+}
 #welcome_banner {
   text-align: right;
   margin-right: 2%;
-  margin-bottom: -10px;
+  display: inline;
+  width: 80%;
+}
+.okBtn:hover {
+  background: #696969;
+  color: #d3d3d3;
+  border: none;
+}
+.okBtn {
+  background: white;
+  color: black;
+  border: none;
 }
 .red,
-.green {
-  transition: 3s ease-in;
-  animation: fadeOut 7s;
-  -webkit-animation: fadeOut 7s;
-  -moz-animation: fadeOut 7s;
-  -o-animation: fadeOut 7s;
-  -ms-animation: fadeOut 7s;
+.green,
+.white {
+  transition: 0.25s linear;
+  text-shadow: 0px 0px 13px white;
 }
 .red {
   color: red;
@@ -57,8 +69,10 @@
 .green {
   color: green;
 }
-.nuetral {
-  color: transparent;
+.white {
+  color: white;
+
+  text-shadow: 0px 0px 3px black;
 }
 .loginLabel {
   text-align: center;
@@ -187,8 +201,9 @@ input:focus {
 }
 h3 {
   font: bold arial, sans-serif;
+  width: 87%;
   position: relative;
-  display: inline;
+  display: inline-block;
   border-radius: 5px;
   padding: 1px 5px;
   letter-spacing: 2px;
@@ -201,6 +216,8 @@ h3 {
   background-clip: text;
   box-shadow: 0px 0px 4px black;
   font-size: 10px;
+  margin-bottom: -2px;
+  margin-top: -2px;
 }
 h4 {
   margin-bottom: -2px;
@@ -243,11 +260,14 @@ h4.rightSect {
 .payLabel2,
 .payLabel3 {
   display: inline-block;
-  text-align: right;
+  text-align: center;
   font-weight: 600;
-  font-size: 10px;
-  margin-top: 2px;
-  margin-bottom: 2px;
+  margin-top: -1px;
+  margin-bottom: 12px;
+  background: white;
+  width: 90%;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px black;
 }
 
 .timelabel1,
@@ -620,7 +640,7 @@ input.breakPunch {
 .jobForm {
   margin-top: -40px;
   margin-left: 3%;
-  width: 60%;
+  width: 180px;
   display: inline-block;
 }
 .jobInput {
@@ -640,8 +660,23 @@ input.breakPunch {
   width: -moz-fit-content;
   width: fit-content;
   color: green;
-  margin-bottom: 10px;
   box-shadow: 0px 0px 5px black;
+}
+.jobBox {
+  font-size: 12px;
+  border-radius: 5px;
+  background-color: #f6f6f6;
+  width: -moz-fit-content;
+  padding: 1px 5px 10px 5px;
+  text-align: left;
+  width: fit-content;
+  color: green;
+  box-shadow: 0px 0px 5px black;
+}
+.jobLeftField,
+.jobRightField {
+  margin-top: 5px;
+  color: #696969;
 }
 .payrateBoxInp {
   color: black;
@@ -659,6 +694,9 @@ input.breakPunch {
   width: 120px;
 
   box-shadow: 0px 0px 5px black;
+}
+.jobDatum {
+  float: right;
 }
 .newJobBtn:hover {
   font-size: 1rem;
@@ -923,5 +961,26 @@ input.breakPunch {
 }
 .nameLabel {
   color: white;
+  text-align: left;
   text-shadow: 0px 0px 5px black;
+}
+.bounceBtn {
+  animation: bounce 0.5s infinite alternate;
+  -webkit-animation: bounce 0.5s infinite alternate;
+}
+@keyframes bounce {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-5px);
+  }
+}
+@-webkit-keyframes bounce {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-5px);
+  }
 }

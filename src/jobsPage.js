@@ -149,6 +149,15 @@ export default class JobsPage extends React.Component {
   getPeriod() {
     return this.state.day + " " + this.state.time + " " + this.state.aOrP;
   }
+  getPeriodAbbr() {
+    return (
+      this.state.day.substr(0, 3) +
+      " " +
+      this.state.time +
+      " " +
+      this.state.aOrP
+    );
+  }
   setStartDate(date) {
     var dateArr = date.toString().split(" ");
     var dateStr =
@@ -254,7 +263,6 @@ export default class JobsPage extends React.Component {
         requestOptions
       );
       var result = await response.text();
-      console.log(result);
       if (result == -1) {
         console.log("Duplicate Name");
       } else {
@@ -314,12 +322,6 @@ export default class JobsPage extends React.Component {
         jobAction: "4",
         id: this.state.currJobid,
         name: this.state.name,
-        hourCutoff: this.state.hourCutoff,
-        payrate: this.state.payrate,
-        isWeekly: this.state.isWeekly,
-        resetsWeekly: this.state.resetsWeekly,
-        periodStarts: this.getPeriod(),
-        startDate: this.state.startDate,
         endDate: this.state.endDate
       };
       const requestOptions = {
@@ -361,17 +363,6 @@ export default class JobsPage extends React.Component {
     }
   };
   render() {
-    var listItems = [];
-    for (var a = 0; a < this.state.jobs.length; a++) {
-      var job = this.state.jobs[a];
-      listItems.push(
-        <JobBtn
-          job={job}
-          fontSize={this.props.fontSize}
-          setJobData={this.openJob.bind(this)}
-        />
-      );
-    }
     var resetsWeeklyCont =
       this.state.isWeekly == 0 ? (
         <div class="nameLabel">
@@ -387,6 +378,202 @@ export default class JobsPage extends React.Component {
       ) : (
         ""
       );
+    var jobForm = (
+      <form class="jobForm" style={{ display: this.state.formVisible }}>
+        <div class="jobBox">
+          <p>Name*:</p>
+          <input
+            type="text"
+            placeholder={this.state.name}
+            style={{ textAlign: "center", marginTop: "-20px" }}
+            onChange={this.setName.bind(this)}
+          />
+        </div>
+        <br />
+        <div class="jobBox">
+          Payrate*:
+          <br />
+          <div
+            class="payrateBox"
+            style={{ boxShadow: "0px 0px 0px transparent" }}
+          >
+            $
+            <input
+              class="payrateBoxInp"
+              type="text"
+              placeholder={this.state.payrate}
+              onChange={this.setPayrate.bind(this)}
+              style={{ marginBottom: "-10px" }}
+            />{" "}
+            /hr
+          </div>
+        </div>
+        <div class="payrateBox" style={{ marginTop: "10px" }}>
+          O-time after*:
+          <input
+            class="payrateBoxInp"
+            type="text"
+            style={{ width: "40px" }}
+            placeholder={Number(this.state.hourCutoff).toFixed(2)}
+            onChange={this.sethourCutoff.bind(this)}
+          />
+          hours
+        </div>
+        <br />
+        <div class="jobBox" style={{ width: "150px" }}>
+          Payperiod Starts*:
+          <br />
+          <div style={{ width: "100%", boxShadow: "0px 0px 5px black" }}>
+            <Select
+              class="aOrpCont"
+              onChange={this.setDay.bind(this)}
+              options={this.days}
+              placeholder={this.state.day}
+            />
+          </div>
+          <div class="aOrpCont">
+            <input
+              onChange={this.setTime.bind(this)}
+              class="timeBox"
+              type="text"
+              maxLength="5"
+              placeholder={this.state.time}
+            />
+            <div style={{ width: "100%" }}>
+              <Select
+                class="aOrp"
+                options={this.aOrP}
+                placeholder={this.state.aOrP}
+                onChange={this.setAorP.bind(this)}
+              />
+            </div>
+          </div>
+        </div>
+        <br />
+        <button
+          onClick={this.setWeekly.bind(this)}
+          class={
+            this.state.isWeekly == "1" ? "weeklyRadioOn" : "weeklyRadioOff"
+          }
+        >
+          Weekly
+        </button>
+        <button
+          onClick={this.setBiWeekly.bind(this)}
+          class={
+            this.state.isWeekly == "0" ? "weeklyRadioOn" : "weeklyRadioOff"
+          }
+        >
+          Bi-Weekly
+        </button>
+        {resetsWeeklyCont}
+        <p class="dateLabel"> First PayPeriod*:</p>
+        <div class="dateCont">
+          <DatePicker
+            onChange={(date) => this.setStartDate(date)}
+            placeholderText={this.state.startDate}
+            dateFormat="YYYY-MM-DD HH:mm:ss"
+          />
+        </div>
+
+        <button
+          onClick={
+            this.state.currJobid == ""
+              ? this.createJob.bind(this)
+              : this.saveJob.bind(this)
+          }
+          class="saveJobBtn"
+        >
+          {" "}
+          Save
+        </button>
+        <button onClick={this.deleteJob.bind(this)} class="deleteJobBtn">
+          {" "}
+          Delete
+        </button>
+      </form>
+    );
+    var jobView = (
+      <form class="jobForm" style={{ display: this.state.formVisible }}>
+        <div class="jobBox">
+          <p>Name*:</p>
+          <input
+            type="text"
+            placeholder={this.state.name}
+            style={{ textAlign: "center", marginTop: "-20px" }}
+            onChange={this.setName.bind(this)}
+          />
+          <div>
+            <div class="jobLeftField">
+              <b>Pay Rate:</b>
+              <div class="jobDatum">
+                ${Number(this.state.payrate).toFixed(2)}/hr
+              </div>
+            </div>
+            <div class="jobRightField">
+              <b>Overtime Starts:</b>
+              <div class="jobDatum">
+                {Number(this.state.hourCutoff).toFixed(2)}hr
+              </div>
+            </div>
+            <div class="jobRightField">
+              <b>Pay Period:</b>
+              <div class="jobDatum">{this.getPeriodAbbr()}</div>
+            </div>
+            <div class="jobRightField">
+              <b>{this.state.isWeekly == "1" ? "Weekly" : "Bi-Weekly"}</b>
+              <i class="jobDatum">
+                {" "}
+                {this.state.resetsWeekly == "1" ? "Resets Weekly" : ""}
+              </i>
+            </div>
+            <div class="jobRightField">
+              <b>Start Date:</b>
+              <div class="jobDatum">
+                {this.state.startDate.toString().split(" ")[0]}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="dateLabel">End Date:</p>
+        <div class="dateCont">
+          <DatePicker
+            onChange={(date) => this.setEndDate(date)}
+            placeholderText={this.state.endDate}
+          />
+        </div>
+        <button
+          onClick={
+            this.state.currJobid == ""
+              ? this.createJob.bind(this)
+              : this.saveJob.bind(this)
+          }
+          class="saveJobBtn"
+        >
+          {" "}
+          Save
+        </button>
+        <button onClick={this.deleteJob.bind(this)} class="deleteJobBtn">
+          {" "}
+          Delete
+        </button>
+      </form>
+    );
+    var jobContent = this.state.currJobid == "" ? jobForm : jobView;
+    var listItems = [];
+    for (var a = 0; a < this.state.jobs.length; a++) {
+      var job = this.state.jobs[a];
+      listItems.push(
+        <JobBtn
+          job={job}
+          hasCurr={this.state.currJobid == job.id}
+          fontSize={this.props.fontSize}
+          setJobData={this.openJob.bind(this)}
+        />
+      );
+    }
+
     return (
       <div style={{ marginTop: 40 }}>
         <button
@@ -413,116 +600,7 @@ export default class JobsPage extends React.Component {
         </button>
         <div class="jobPage">
           <div class="jobsCont">{listItems}</div>
-          <form class="jobForm" style={{ display: this.state.formVisible }}>
-            <div class="nameLabel">Name*:</div>
-            <input
-              type="text"
-              placeholder={this.state.name}
-              style={{ textAlign: "center", boxShadow: "0px 0px 5px black" }}
-              onChange={this.setName.bind(this)}
-            />
-            <br />
-            <br />
-            <div class="ppLabel">Payrate*:</div>
-            <br />
-
-            <div class="payrateBox">
-              $
-              <input
-                class="payrateBoxInp"
-                type="text"
-                placeholder={this.state.payrate}
-                onChange={this.setPayrate.bind(this)}
-              />{" "}
-              /hr
-            </div>
-            <div class="payrateBox">
-              O-time after*:
-              <input
-                class="payrateBoxInp"
-                type="text"
-                style={{ width: "40px" }}
-                placeholder={Number(this.state.hourCutoff).toFixed(2)}
-                onChange={this.sethourCutoff.bind(this)}
-              />
-              hours
-            </div>
-            <div class="ppLabel">Payperiod Starts*:</div>
-            <br />
-            <div style={{ width: "100%", boxShadow: "0px 0px 5px black" }}>
-              <Select
-                class="aOrpCont"
-                onChange={this.setDay.bind(this)}
-                options={this.days}
-                placeholder={this.state.day}
-              />
-            </div>
-            <div class="aOrpCont">
-              <input
-                onChange={this.setTime.bind(this)}
-                class="timeBox"
-                type="text"
-                maxLength="5"
-                placeholder={this.state.time}
-              />
-              <div style={{ width: "100%" }}>
-                <Select
-                  class="aOrp"
-                  options={this.aOrP}
-                  placeholder={this.state.aOrP}
-                  onChange={this.setAorP.bind(this)}
-                />
-              </div>
-            </div>
-            <br />
-            <button
-              onClick={this.setWeekly.bind(this)}
-              class={
-                this.state.isWeekly == "1" ? "weeklyRadioOn" : "weeklyRadioOff"
-              }
-            >
-              Weekly
-            </button>
-            <button
-              onClick={this.setBiWeekly.bind(this)}
-              class={
-                this.state.isWeekly == "0" ? "weeklyRadioOn" : "weeklyRadioOff"
-              }
-            >
-              Bi-Weekly
-            </button>
-            {resetsWeeklyCont}
-            <p class="dateLabel"> First PayPeriod*:</p>
-            <div class="dateCont">
-              <DatePicker
-                onChange={(date) => this.setStartDate(date)}
-                placeholderText={this.state.startDate}
-                dateFormat="YYYY-MM-DD HH:mm:ss"
-              />
-            </div>
-            <p class="dateLabel">End Date:</p>
-            <div class="dateCont">
-              <DatePicker
-                onChange={(date) => this.setEndDate(date)}
-                placeholderText={this.state.endDate}
-              />
-            </div>
-            <button
-              onClick={
-                this.state.currJobid == ""
-                  ? this.createJob.bind(this)
-                  : this.saveJob.bind(this)
-              }
-              class="saveJobBtn"
-            >
-              {" "}
-              Save
-            </button>
-            <button onClick={this.deleteJob.bind(this)} class="deleteJobBtn">
-              {" "}
-              Delete
-            </button>
-          </form>
+          {jobContent}
         </div>
       </div>
     );

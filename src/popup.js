@@ -48,13 +48,14 @@ export default class Popup extends React.Component {
     var bArr = before.toString().split(":");
     var aHour = Number(aArr[0]) + Number(aArr[1] / 60);
     var bHour = Number(bArr[0]) + Number(bArr[1] / 60);
-    var diff = bHour - aHour;
+    var diff = aHour - bHour;
     var ref = this.timeDiffs.find((x) => x.key == key);
     if (ref == undefined) {
       this.timeDiffs.push({ key: key, value: diff });
     } else {
       ref.value = diff;
     }
+    console.log(diff);
   }
   toggleOn(e) {
     this.initTime = e.target.placeholder;

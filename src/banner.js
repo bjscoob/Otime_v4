@@ -12,8 +12,8 @@ export default class Banner extends React.Component {
       email: this.props.email,
       name: this.props.name,
       count: 0,
-      errColor: "green",
-      errorMsg: "Success!"
+      messageColor: this.props.messageColor,
+      bannerMessage: this.props.bannerMessage
     };
   }
   pad(n, width, z) {
@@ -40,7 +40,9 @@ export default class Banner extends React.Component {
     var dataTEXT = await response.text();
     try {
       var data = JSON.parse(dataTEXT);
+
       this.goToHome(data);
+      this.setMessage("Logged In", "green");
     } catch (e) {
       this.flagError(dataTEXT);
     }
@@ -81,10 +83,6 @@ export default class Banner extends React.Component {
     );
     console.log(await response.text());
   }
-  flagError(isError, t) {
-    this.errorColor = isError ? "red" : "green";
-    this.errorMsg = t;
-  }
 
   goToLogin = (event) => {
     this.props.updFn(undefined, 0);
@@ -107,14 +105,18 @@ export default class Banner extends React.Component {
   setPassword = (event) => {
     this.setState({ pswd: event.target.value });
   };
+  setMessage(m, c) {
+    this.setState({ messageColor: c, bannerMessage: m });
+  }
+  clearMessage() {
+    this.setState({ messageColor: "white", bannerMessage: "Welcome Back" });
+  }
   getBannerContent(statusCode) {
+    var fontSize = (this.props.fontSize == 40 ? "15" : "20") + "px";
     var defaultBanner = <div>Unable to Render Banner</div>;
     this.overtime = this.props.overtimeHours * this.props.multiplier;
     var loginBanner = (
       <div>
-        <p class="error" style={{ color: this.props.errorColor }}>
-          {this.props.errorMsg}
-        </p>
         <div class="loginFormContainer">
           <form>
             <input
@@ -244,17 +246,27 @@ export default class Banner extends React.Component {
             />
           </div>
           <div class="column2">
-            <p class={this.props.errorColor} style={{ marginBottom: "-30px" }}>
-              {this.props.errorMessage}
-            </p>
-            <h1 id="welcome_banner">Welcome Back</h1>
+            <div class="msgCont">
+              {" "}
+              <h1 id="welcome_banner" class={this.state.messageColor}>
+                {this.state.bannerMessage}
+              </h1>
+              {this.state.bannerMessage != "Welcome Back" ? (
+                <button class="okBtn" onClick={this.clearMessage.bind(this)}>
+                  OK
+                </button>
+              ) : (
+                ""
+              )}
+            </div>
             <h2 id="name_label">{this.state.name}</h2>
           </div>
-          <div class="row">
+          <div class="row" style={{ fontSize: fontSize }}>
             <div class="column1">
               <h3
                 style={{
-                  background: this.props.colors[0]
+                  background: this.props.colors[0],
+                  fontSize: fontSize
                 }}
               >
                 Base Time:{" "}
@@ -266,7 +278,8 @@ export default class Banner extends React.Component {
               <br />
               <h3
                 style={{
-                  background: this.props.colors[0]
+                  background: this.props.colors[0],
+                  fontSize: fontSize
                 }}
               >
                 Over Time:{" "}
@@ -279,7 +292,8 @@ export default class Banner extends React.Component {
               <hr class="leftHr" />
               <h3
                 style={{
-                  background: this.props.colors[1]
+                  background: this.props.colors[1],
+                  fontSize: fontSize
                 }}
               >
                 Total Time:{" "}
@@ -292,7 +306,8 @@ export default class Banner extends React.Component {
             <div class="column1">
               <h3
                 style={{
-                  background: this.props.colors[0]
+                  background: this.props.colors[0],
+                  fontSize: fontSize
                 }}
               >
                 Base Pay:{" "}
@@ -305,7 +320,8 @@ export default class Banner extends React.Component {
               <h3
                 class="olabel"
                 style={{
-                  background: this.props.colors[0]
+                  background: this.props.colors[0],
+                  fontSize: fontSize
                 }}
               >
                 O-time Pay:{" "}
@@ -318,7 +334,8 @@ export default class Banner extends React.Component {
               <hr class="rightHr" />
               <h3
                 style={{
-                  background: this.props.colors[1]
+                  background: this.props.colors[1],
+                  fontSize: fontSize
                 }}
               >
                 Total Pay:{" "}

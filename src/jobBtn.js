@@ -9,7 +9,7 @@ export default class JobBtn extends React.Component {
 
   render() {
     return (
-      <div>
+      <div class={this.props.hasCurr ? "bounceBtn" : ""}>
         <ButtonBase
           onClick={(event) => {
             this.props.setJobData(this.props.job);

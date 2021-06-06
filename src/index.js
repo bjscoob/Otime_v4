@@ -47,11 +47,9 @@ export class App extends React.Component {
       doubleWeek: 0,
       punches: [],
       totalHours: 0.0,
-      errorColor: "green",
-      errorMessage: "Success!!!"
+      messageColor: "green",
+      bannerMessage: "Logged In"
     };
-    this.errorMessage = "Success!!!";
-    this.errorColor = "green";
     this.totalHours = 0;
     this.baseHours = 0.0;
     this.overtimeHours = 0.0;
@@ -444,8 +442,9 @@ export class App extends React.Component {
             daySelect={daySelect}
             setJob={this.setJob.bind(this)}
             currJob={this.state.currJob}
-            errorColor={this.state.errorColor}
-            errorMessage={this.state.errorMessage}
+            messageColor={this.state.messageColor}
+            bannerMessage={this.state.bannerMessage}
+            fontSize={this.cardWidth}
           />
         </div>
 
