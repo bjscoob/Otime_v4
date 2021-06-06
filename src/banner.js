@@ -63,6 +63,24 @@ export default class Banner extends React.Component {
       requestOptions
     ).then((response) => response.data);
   }
+  async forgot() {
+    console.log(this.state.email);
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      },
+      body: JSON.stringify({
+        email: this.state.email
+      })
+    };
+    var response = await fetch(
+      "https://jax-apps.com/otime_app/api/forgot.php",
+      requestOptions
+    );
+    console.log(await response.text());
+  }
   flagError(isError, t) {
     this.errorColor = isError ? "red" : "green";
     this.errorMsg = t;
@@ -76,6 +94,9 @@ export default class Banner extends React.Component {
   }
   goToRegister = (event) => {
     this.setState({ status: 2 });
+  };
+  goToForgot = (event) => {
+    this.setState({ status: 9 });
   };
   setName = (event) => {
     this.setState({ name: event.target.value });
@@ -119,8 +140,11 @@ export default class Banner extends React.Component {
           <br />
         </div>
         <div class="forgregCont">
-          <button class="forgReg">Forgot Password </button>
-          <button class="forgReg" onClick={this.goToRegister}>
+          <br />
+          <button class="forgReg" onClick={this.goToForgot.bind(this)}>
+            Forgot Password{" "}
+          </button>
+          <button class="forgReg" onClick={this.goToRegister.bind(this)}>
             Register{" "}
           </button>
         </div>
@@ -162,9 +186,47 @@ export default class Banner extends React.Component {
           <br />
         </div>
         <div class="forgregCont">
-          <button class="forgReg">Forgot Password </button>
+          <br />
+          <button class="forgReg" onClick={this.goToForgot.bind(this)}>
+            Forgot Password{" "}
+          </button>
           <button class="forgReg" onClick={this.goToLogin}>
             Login
+          </button>
+        </div>
+      </div>
+    );
+    var forgotBanner = (
+      <div>
+        <div class="loginFormContainer">
+          <form>
+            <input
+              onChange={this.setEmail.bind(this)}
+              class="loginLabel"
+              type="email"
+              placeholder="email*"
+            />
+            <br />
+          </form>
+          <br />
+        </div>
+        <div class="btnContainer">
+          <button
+            style={{ width: "150px" }}
+            class="loginSubmit"
+            onClick={this.forgot.bind(this)}
+          >
+            Send Recovery Email
+          </button>
+          <br />
+        </div>
+        <div class="forgregCont">
+          <br />
+          <button class="forgReg" onClick={this.goToLogin}>
+            Login
+          </button>
+          <button class="forgReg" onClick={this.goToRegister.bind(this)}>
+            Register{" "}
           </button>
         </div>
       </div>
@@ -314,6 +376,8 @@ export default class Banner extends React.Component {
         return registerBanner;
       case 3:
         return jobsBanner;
+      case 9:
+        return forgotBanner;
       default:
         return defaultBanner;
     }
