@@ -79,12 +79,10 @@ export default class PayPeriod extends React.Component {
               timeArr[i + 1].time
             )
           );
-          //console.log( newTime+this.baseTime +" "+ Number(this.props.hourCutoff)*(weekNo));
           if (this.overtimeMode) {
             this.overtime += newTime;
             this.dayPay = newTime * this.props.multiplier;
-          }
-          if (
+          } else if (
             newTime + this.baseTime >
             Number(this.props.hourCutoff) * weekNo
           ) {
@@ -103,7 +101,6 @@ export default class PayPeriod extends React.Component {
             this.dayPay = newTime;
           }
           this.dayTime = newTime;
-          console.log(this.dayPay);
         } catch (e) {
           console.log("Open Punch Day Card: " + moda);
         }
@@ -214,6 +211,10 @@ export default class PayPeriod extends React.Component {
           addHrsFn={this.props.addToHours.bind(this)}
           colorBg={this.props.colors}
           pay={this.dayPay}
+          baseTime={this.baseTime}
+          overtime={this.overtime}
+          overtimeMode={this.overtimeMode}
+          weekNo={this.weekNo}
         />
       );
 
@@ -232,8 +233,22 @@ export default class PayPeriod extends React.Component {
     this.dayRefs = dayRefs;
     return dayRefs;
   }
-  componentDidUpdate(prevProps) {}
+  componentDidUpdate(prevProps) {
+    if (prevProps.punches != this.props.punches) {
+      this.props.addToHours(this.totals, this.overtime, this.baseTime, true);
+    }
+    this.totals = 0.0;
+    this.overtime = 0.0;
+    this.baseTime = 0.0;
+    this.dayTime = 0.0;
+    this.overtimeMode = false;
+  }
   componentDidMount() {
     this.props.addToHours(this.totals, this.overtime, this.baseTime, true);
+    this.totals = 0.0;
+    this.overtime = 0.0;
+    this.baseTime = 0.0;
+    this.dayTime = 0.0;
+    this.overtimeMode = false;
   }
 }

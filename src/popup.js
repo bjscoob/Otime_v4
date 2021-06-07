@@ -22,9 +22,12 @@ export default class Popup extends React.Component {
       tempArr: []
     };
     this.inputLen = 0;
-    this.timeDiffs = [];
     this.errorColor = "green";
     this.errorMessage = "";
+    this.overtime = this.props.overTime;
+    this.baseTime = 0;
+    this.overTimeMode = this.props.overtimeMode;
+    this.baseHours = this.props.baseTime;
   }
   alert(color, msg) {
     this.errorColor = color;
@@ -42,20 +45,6 @@ export default class Popup extends React.Component {
     this.setState({
       data: a
     });
-  }
-  timeDiff(before, after, key) {
-    var aArr = after.toString().split(":");
-    var bArr = before.toString().split(":");
-    var aHour = Number(aArr[0]) + Number(aArr[1] / 60);
-    var bHour = Number(bArr[0]) + Number(bArr[1] / 60);
-    var diff = aHour - bHour;
-    var ref = this.timeDiffs.find((x) => x.key == key);
-    if (ref == undefined) {
-      this.timeDiffs.push({ key: key, value: diff });
-    } else {
-      ref.value = diff;
-    }
-    console.log(diff);
   }
   toggleOn(e) {
     this.initTime = e.target.placeholder;
@@ -101,12 +90,6 @@ export default class Popup extends React.Component {
               key: id + "|" + e.target.className,
               value: id + "|" + e.target.value + ":00|" + e.target.className
             });
-            this.timeDiff(
-              this.initTime,
-              e.target.value,
-              id + "|" + e.target.className
-            );
-            console.log(this.timeDiffs);
           }
         }
         var id = e.target.id.split("|")[0];
@@ -211,11 +194,7 @@ export default class Popup extends React.Component {
       await this.editPunch(a[0], a[1], a[2]);
     }
     this.props.liftState();
-    var diff = 0;
-    this.timeDiffs.map((d) => {
-      diff = diff + d.value;
-    });
-    this.props.addFn(diff, false);
+    this.props.setFn(this.props.id);
   }
   async editPunch(id, time, isStart) {
     var d = this.props.dt;

@@ -59,7 +59,11 @@ export default class DayCard extends React.Component {
             this.props.popUpFn(
               this.props.moda,
               this.props.dt,
-              this.props.times
+              this.props.times,
+              this.props.baseTime,
+              this.props.overtime,
+              this.props.overtimeMode,
+              this.props.weekNo
             );
             this.setState({ hasData: false });
           }}

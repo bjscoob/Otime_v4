@@ -47,8 +47,8 @@ export class App extends React.Component {
       doubleWeek: 0,
       punches: [],
       totalHours: 0.0,
-      messageColor: "green",
-      bannerMessage: "Logged In"
+      messageColor: "white",
+      bannerMessage: "Welcome to O-time"
     };
     this.totalHours = 0;
     this.baseHours = 0.0;
@@ -56,21 +56,12 @@ export class App extends React.Component {
     this.hourCutoff = 40.0;
     this.resetsWeekly = 1;
     //default cardwidth should be 160. If anything else its for testing
-    this.cardWidth = "40";
+    this.cardWidth = "160";
     if (isMobileOnly) {
       this.cardWidth = "40";
     }
     if (isTablet) {
       this.cardWidth = "80";
-    }
-  }
-  async getData() {
-    if (!this.state.hasData) {
-      var url = "https://jax-apps.com/otime_app/api/getpaypdt.php";
-      var punches = await axios
-        .get(url, { headers: { "Access-Control-Allow-Origin": "*" } })
-        .then((response) => response.data);
-      this.punches = punches;
     }
   }
   async getJobs(id) {
@@ -169,7 +160,9 @@ export class App extends React.Component {
       this.overtimeHours = o;
       this.baseHours = b;
     } else {
-      this.totalHours = this.totalHours + t;
+      this.totalHours += t;
+      this.overtimeHours += o;
+      this.baseHours += b;
     }
 
     this.setState({
@@ -225,6 +218,10 @@ export class App extends React.Component {
       currJob: newJob
     });
   }
+  async setPunches(id) {
+    var punches = await this.getPunches(id);
+    this.setState({ punches: punches });
+  }
   async getPayPdtStart(jobId) {
     const requestOptions = {
       method: "POST",
@@ -247,7 +244,7 @@ export class App extends React.Component {
     }
   }
 
-  openPopup(day, dt, times) {
+  openPopup(day, dt, times, baseTime, overTime, overtimeMode, weekNo) {
     var timeArr = times;
     var popDay = [day];
     this.setState({
@@ -256,7 +253,11 @@ export class App extends React.Component {
       dt: dt,
       popDay: day,
       popData: timeArr,
-      foregr: "fadeout"
+      foregr: "fadeout",
+      tempBaseTime: baseTime,
+      tempOverTime: overTime,
+      overtimeMode: overtimeMode,
+      weekNo: weekNo
     });
   }
   closePopup() {
@@ -289,22 +290,6 @@ export class App extends React.Component {
     var weekOne = [];
     var weekTwo = [];
     var daySelect = [];
-    var dates = [
-      "04/08",
-      "04/09",
-      "04/10",
-      "04/11",
-      "04/12",
-      "04/13",
-      "04/14",
-      "04/15",
-      "04/16",
-      "04/17",
-      "04/18",
-      "04/19",
-      "04/20",
-      "05/22"
-    ];
     if (this.state.jobs) {
       for (var k = 0; k < this.state.jobs.length; k++) {
         var j = this.state.jobs[k];
@@ -313,70 +298,7 @@ export class App extends React.Component {
     }
     var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     dayNames = dayNames.concat(dayNames);
-    var stop = false;
-    //first week
-    var weekArr = weekOne;
-    if (this.state.hasData) {
-      this.punches.forEach((punch) => {
-        if (punch.end) {
-          //START PUNCH is complete
-          this.times.push(new Time(punch.id, punch.start, true, true));
-          this.times.push(new Time(punch.id, punch.end, false, true));
-        } else {
-          //START PUNCH not complete
-          this.times.push(new Time(punch.id, punch.start, true, false));
-        }
-      });
-    }
 
-    var len = 7;
-    if (this.doubleWeek) {
-      weekArr = weekArr.concat(weekTwo);
-      len = 14;
-    }
-    for (var i = 0; i < len; i++) {
-      stop = false;
-      var moda = dates[i].toString();
-      if (
-        this.times.length > 0 &&
-        moda == this.times[this.times.length - 1].date
-      ) {
-        stop = true;
-      }
-
-      weekArr.push(
-        <DayCard
-          cardWidth={this.cardWidth}
-          payRate={this.state.payRate}
-          moda={moda}
-          color={this.state.colors[1]}
-          day={dayNames[i]}
-          elapsedTime="0.0"
-          times={this.filterTimesAt(moda)}
-          stop={stop}
-          popUpFn={this.openPopup.bind(this)}
-          addHrsFn={this.addToHours.bind(this)}
-          colorBg={this.state.colors}
-        />
-      );
-    }
-    weekOne = weekArr.slice(0, 7);
-    dayRefs = (
-      <div className="weekView">
-        <div class="week">{weekOne}</div>
-      </div>
-    );
-    //second week
-    if (this.doubleWeek) {
-      weekTwo = weekArr.slice(7, 14);
-      dayRefs = (
-        <div className="weekView">
-          <div class="week">{weekOne}</div>
-          <div class="week2">{weekTwo}</div>
-        </div>
-      );
-    }
-    this.dayRefs = dayRefs;
     var payPeriod = "";
     if (this.state.status == 1) {
       payPeriod = (
@@ -412,7 +334,12 @@ export class App extends React.Component {
             data={this.state.popData}
             liftState={this.liftState.bind(this)}
             closePopup={this.closePopup.bind(this)}
-            addFn={this.addToHours.bind(this)}
+            setFn={this.setPunches.bind(this)}
+            baseTime={this.state.tempBaseTime}
+            overTime={this.state.tempOverTime}
+            overtimeMode={this.state.overtimeMode}
+            weekNo={this.state.weekNo}
+            hourCutoff={this.state.hourCutoff}
           />
         ) : null}
         <div
@@ -462,11 +389,50 @@ export class App extends React.Component {
           <br />
           {payPeriod}
         </div>
+
+        <div
+          class="footer"
+          style={{
+            color: this.state.colors[0],
+            background: this.state.colors[1]
+          }}
+        >
+          <a
+            href="https://jax-apps.com/otime_app/tm"
+            target="_blank"
+            style={{
+              color: this.state.colors[0],
+              background: this.state.colors[1]
+            }}
+          >
+            Terms & Conditions
+          </a>
+          <a
+            href="https://jax-apps.com/otime_app/privacy"
+            target="_blank"
+            style={{
+              color: this.state.colors[0],
+              background: this.state.colors[1]
+            }}
+          >
+            Privacy Policy
+          </a>
+          <a
+            href="https://jax-apps.com/"
+            target="_blank"
+            style={{
+              color: this.state.colors[0],
+              background: this.state.colors[1]
+            }}
+          >
+            Send Ticket
+          </a>
+          <br />© 2021 JAX-APPS
+        </div>
       </div>
     );
   }
   async componentDidMount() {
-    await this.getData();
     this.setState({ hasData: true });
   }
 }

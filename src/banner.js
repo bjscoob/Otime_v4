@@ -9,12 +9,13 @@ export default class Banner extends React.Component {
     this.state = {
       status: this.props.status,
       id: this.props.id,
-      email: this.props.email,
-      name: this.props.name,
       count: 0,
       messageColor: this.props.messageColor,
       bannerMessage: this.props.bannerMessage
     };
+    this.name = this.props.name;
+    this.email = this.props.email;
+    this.psswd = "";
   }
   pad(n, width, z) {
     z = z || "0";
@@ -29,8 +30,8 @@ export default class Banner extends React.Component {
         "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({
-        email: this.state.email,
-        pswd: sha256(this.state.pswd).toString()
+        email: this.email,
+        pswd: this.pswd
       })
     };
     var response = await fetch(
@@ -43,11 +44,18 @@ export default class Banner extends React.Component {
 
       this.goToHome(data);
       this.setMessage("Logged In", "green");
+      this.name = data.name;
+      this.email = data.email;
+      this.psswd = "";
     } catch (e) {
-      //this.flagError(dataTEXT);
+      this.setMessage(dataTEXT, "red");
     }
   }
   async register() {
+    if (this.email == "" || this.name == "" || this.pswd == "") {
+      this.setMessage("Please enter all fields.", "red");
+      return;
+    }
     const requestOptions = {
       method: "POST",
       headers: {
@@ -55,15 +63,21 @@ export default class Banner extends React.Component {
         "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({
-        email: this.state.email,
-        name: this.state.name,
+        email: this.email,
+        name: this.name,
         pswd: sha256(this.state.pswd).toString()
       })
     };
-    fetch(
+    var response = await fetch(
       "https://jax-apps.com/otime_app/api/register.php",
       requestOptions
-    ).then((response) => response.data);
+    );
+    var text = await response.text();
+    var c = "red";
+    if (text == "Success! Email has been sent.") {
+      c = "green";
+    }
+    this.setMessage(text, c);
   }
   async forgot() {
     const requestOptions = {
@@ -73,14 +87,19 @@ export default class Banner extends React.Component {
         "Access-Control-Allow-Origin": "*"
       },
       body: JSON.stringify({
-        email: this.state.email
+        email: this.email
       })
     };
     var response = await fetch(
       "https://jax-apps.com/otime_app/api/forgot.php",
       requestOptions
     );
-    console.log(await response.text());
+    var text = await response.text();
+    var c = "red";
+    if (text == "Success! Email has been sent.") {
+      c = "green";
+    }
+    this.setMessage(text, c);
   }
 
   goToLogin = (event) => {
@@ -90,19 +109,22 @@ export default class Banner extends React.Component {
     this.props.updFn(data, 1);
   }
   goToRegister = (event) => {
+    this.email = "";
+    this.name = "";
+    this.psswd = "";
     this.setState({ status: 2 });
   };
   goToForgot = (event) => {
     this.setState({ status: 9 });
   };
   setName = (event) => {
-    this.setState({ name: event.target.value });
+    this.name = event.target.value;
   };
   setEmail = (event) => {
-    this.setState({ email: event.target.value });
+    this.email = event.target.value;
   };
   setPassword = (event) => {
-    this.setState({ pswd: event.target.value });
+    this.pswd = event.target.value;
   };
   setMessage(m, c) {
     this.setState({ messageColor: c, bannerMessage: m });
@@ -110,12 +132,30 @@ export default class Banner extends React.Component {
   clearMessage() {
     this.setState({ messageColor: "white", bannerMessage: "Welcome Back" });
   }
+  resetMessage() {
+    this.setState({
+      messageColor: "white",
+      bannerMessage: "Welcome to O-time"
+    });
+  }
   getBannerContent(statusCode) {
     var fontSize = (this.props.fontSize == 40 ? "15" : "20") + "px";
     var defaultBanner = <div>Unable to Render Banner</div>;
     this.overtime = this.props.overtimeHours * this.props.multiplier;
     var loginBanner = (
       <div>
+        <h1 id="welcome_banner" class={this.state.messageColor}>
+          {this.state.bannerMessage}
+        </h1>
+        {this.state.bannerMessage != "Welcome to O-time" ? (
+          <button class="okBtn" onClick={this.resetMessage.bind(this)}>
+            OK
+          </button>
+        ) : (
+          ""
+        )}
+        <br />
+        <br />
         <div class="loginFormContainer">
           <form>
             <input
@@ -154,6 +194,18 @@ export default class Banner extends React.Component {
 
     var registerBanner = (
       <div>
+        <h1 id="welcome_banner" class={this.state.messageColor}>
+          {this.state.bannerMessage}
+        </h1>
+        {this.state.bannerMessage != "Welcome to O-time" ? (
+          <button class="okBtn" onClick={this.resetMessage.bind(this)}>
+            OK
+          </button>
+        ) : (
+          ""
+        )}
+        <br />
+        <br />
         <div class="loginFormContainer">
           <form>
             <input
@@ -199,6 +251,18 @@ export default class Banner extends React.Component {
     );
     var forgotBanner = (
       <div>
+        <h1 id="welcome_banner" class={this.state.messageColor}>
+          {this.state.bannerMessage}
+        </h1>
+        {this.state.bannerMessage != "Welcome to O-time" ? (
+          <button class="okBtn" onClick={this.resetMessage.bind(this)}>
+            OK
+          </button>
+        ) : (
+          ""
+        )}
+        <br />
+        <br />
         <div class="loginFormContainer">
           <form>
             <input
@@ -258,7 +322,7 @@ export default class Banner extends React.Component {
                 ""
               )}
             </div>
-            <h2 id="name_label">{this.state.name}</h2>
+            <h2 id="name_label">{this.name}</h2>
           </div>
           <div class="row" style={{ fontSize: fontSize }}>
             <div class="column1">
@@ -369,7 +433,7 @@ export default class Banner extends React.Component {
     var jobsBanner = (
       <div>
         <h1 id="welcome_banner">Welcome Back</h1>
-        <h2 id="name_label">{this.state.name}</h2>
+        <h2 id="name_label">{this.name}</h2>
         <div class="forgregCont">
           <button class="forgReg" onClick={() => this.props.closeJobFn()}>
             Home...
