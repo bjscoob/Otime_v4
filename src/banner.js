@@ -44,7 +44,7 @@ export default class Banner extends React.Component {
       this.goToHome(data);
       this.setMessage("Logged In", "green");
     } catch (e) {
-      this.flagError(dataTEXT);
+      //this.flagError(dataTEXT);
     }
   }
   async register() {
@@ -76,7 +76,6 @@ export default class Banner extends React.Component {
         email: this.state.email
       })
     };
-    console.log(requestOptions);
     var response = await fetch(
       "https://jax-apps.com/otime_app/api/forgot.php",
       requestOptions

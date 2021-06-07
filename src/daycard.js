@@ -48,8 +48,7 @@ export default class DayCard extends React.Component {
     content = <div class="dayCardContent">{times}</div>;
 
     var money =
-      "$" +
-      Number(this.props.payRate * Number(this.props.elapsedTime)).toFixed(2);
+      "$" + Number(this.props.payRate * Number(this.props.pay)).toFixed(2);
     var bigMoney = money.split(".")[0];
     var lilMoney = "." + money.split(".")[1];
     return (
@@ -74,7 +73,7 @@ export default class DayCard extends React.Component {
               padding: 0,
               textAlign: "left",
               borderRadius: 0,
-              border: "4px solid "+this.props.colorBg[1],
+              border: "4px solid " + this.props.colorBg[1],
               width: Number(this.props.cardWidth),
               marginRight: 3,
               float: "left"

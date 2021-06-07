@@ -12,7 +12,10 @@ export default class PayPeriod extends React.Component {
     };
     this.times = [];
     this.totals = 0.0;
+    this.overtime = 0.0;
+    this.baseTime = 0.0;
     this.dayTime = 0.0;
+    this.overtimeMode = false;
   }
   filterTimesAt(moda) {
     var timeArr = [];
@@ -49,7 +52,10 @@ export default class PayPeriod extends React.Component {
     const diffInMs = Math.abs(d2 - d1);
     return (diffInMs / (1000 * 60 * 60)).toFixed(2);
   }
-  getTotalTime(timeArr, moda) {
+  getTotalTime(timeArr, moda, weekNo) {
+    if (this.props.resetsWeekly == 0) {
+      weekNo = 0;
+    }
     var totalTime = 0.0;
     if (timeArr.length > 0) {
       var last = timeArr[timeArr.length - 1];
@@ -65,7 +71,7 @@ export default class PayPeriod extends React.Component {
       }
       for (var i = 0; i < timeArr.length; i += 2) {
         try {
-          totalTime += Number(
+          var newTime = Number(
             this.calculateTime(
               timeArr[i].date,
               timeArr[i].time,
@@ -73,12 +79,36 @@ export default class PayPeriod extends React.Component {
               timeArr[i + 1].time
             )
           );
+          //console.log( newTime+this.baseTime +" "+ Number(this.props.hourCutoff)*(weekNo));
+          if (this.overtimeMode) {
+            this.overtime += newTime;
+            this.dayPay = newTime * this.props.multiplier;
+          }
+          if (
+            newTime + this.baseTime >
+            Number(this.props.hourCutoff) * weekNo
+          ) {
+            var t = newTime + this.baseTime;
+            this.overtimeMode = true;
+            this.baseTime = this.props.hourCutoff * weekNo;
+            var o = t - this.baseTime;
+            this.overtime += o;
+            this.dayPay = newTime - o + o * this.props.multiplier;
+          }
+          if (
+            newTime + this.baseTime <=
+            Number(this.props.hourCutoff) * weekNo
+          ) {
+            this.baseTime += newTime;
+            this.dayPay = newTime;
+          }
+          this.dayTime = newTime;
+          console.log(this.dayPay);
         } catch (e) {
           console.log("Open Punch Day Card: " + moda);
         }
       }
-      this.dayTime = totalTime;
-      this.totals = this.totals + totalTime;
+      this.totals = this.totals + newTime;
     }
     return timeArr;
   }
@@ -142,7 +172,14 @@ export default class PayPeriod extends React.Component {
         />
       );
     }
+
+    this.overtime = 0.0;
+    this.baseTime = 0.0;
+    this.dayTime = 0.0;
     for (var i = 0; i < 7 + this.props.doubleWeek * 7; i++) {
+      if (i == 7) {
+        this.overtimeMode = false;
+      }
       var date = startDate.clone();
       var datecl = date.clone();
       var dayOfWeek = dayNames[dayIndex + i];
@@ -155,9 +192,11 @@ export default class PayPeriod extends React.Component {
       ) {
         stop = true;
       }
+
       this.dayTime = 0.0;
+      this.dayPay = 0.0;
       var preTimes = this.filterTimesAt(moda);
-      var postTimes = this.getTotalTime(preTimes, moda);
+      var postTimes = this.getTotalTime(preTimes, moda, i < 7 ? 1 : 2);
       weeks[b].push(
         <DayCard
           isVisible="visible"
@@ -174,6 +213,7 @@ export default class PayPeriod extends React.Component {
           popUpFn={this.props.openPopup.bind(this)}
           addHrsFn={this.props.addToHours.bind(this)}
           colorBg={this.props.colors}
+          pay={this.dayPay}
         />
       );
 
@@ -194,6 +234,6 @@ export default class PayPeriod extends React.Component {
   }
   componentDidUpdate(prevProps) {}
   componentDidMount() {
-    this.props.addToHours(this.totals, true);
+    this.props.addToHours(this.totals, this.overtime, this.baseTime, true);
   }
 }

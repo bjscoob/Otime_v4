@@ -384,7 +384,7 @@ export default class JobsPage extends React.Component {
           <p>Name*:</p>
           <input
             type="text"
-            placeholder={this.state.name}
+            value={this.state.name}
             style={{ textAlign: "center", marginTop: "-20px" }}
             onChange={this.setName.bind(this)}
           />
@@ -499,7 +499,7 @@ export default class JobsPage extends React.Component {
           <p>Name*:</p>
           <input
             type="text"
-            placeholder={this.state.name}
+            value={this.state.name}
             style={{ textAlign: "center", marginTop: "-20px" }}
             onChange={this.setName.bind(this)}
           />

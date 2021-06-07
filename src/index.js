@@ -53,6 +53,8 @@ export class App extends React.Component {
     this.totalHours = 0;
     this.baseHours = 0.0;
     this.overtimeHours = 0.0;
+    this.hourCutoff = 40.0;
+    this.resetsWeekly = 1;
     //default cardwidth should be 160. If anything else its for testing
     this.cardWidth = "40";
     if (isMobileOnly) {
@@ -161,16 +163,17 @@ export class App extends React.Component {
       this.overtimeHours = 0.0;
     }
   }
-  addToHours(h, whole) {
+  addToHours(t, o, b, whole) {
     if (whole) {
-      this.totalHours = h;
+      this.totalHours = t;
+      this.overtimeHours = o;
+      this.baseHours = b;
     } else {
-      this.totalHours = this.totalHours + h;
+      this.totalHours = this.totalHours + t;
     }
-    this.getBaseHours();
 
     this.setState({
-      totalHours: h
+      totalHours: t
     });
   }
 
@@ -210,7 +213,8 @@ export class App extends React.Component {
     var punches = await this.getPunches(pp.id);
     var sd = pp.startDay.toString().substring(0, 10);
     let newJob = JSON.parse(JSON.stringify(job));
-    this.getBaseHours();
+    this.hourCutoff = job.value.hourCutoff;
+    this.resetsWeekly = job.value.resetsWeekly;
     this.setState({
       ppId: pp.id,
       startsAt: sa,
@@ -244,7 +248,6 @@ export class App extends React.Component {
   }
 
   openPopup(day, dt, times) {
-    //console.log(times);
     var timeArr = times;
     var popDay = [day];
     this.setState({
@@ -282,9 +285,6 @@ export class App extends React.Component {
     });
   }
   render() {
-    console.log("status: " + this.state.status);
-    this.getBaseHours();
-    console.log(this.totalHours);
     var dayRefs = [];
     var weekOne = [];
     var weekTwo = [];
@@ -392,6 +392,9 @@ export class App extends React.Component {
           punches={this.state.punches}
           addToHours={this.addToHours.bind(this)}
           key={this.state.punches}
+          hourCutoff={this.hourCutoff}
+          resetsWeekly={this.resetsWeekly}
+          multiplier={this.state.multiplier}
         />
       );
     }
