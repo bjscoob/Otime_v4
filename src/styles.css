@@ -50,6 +50,28 @@ a:hover {
   -ms-animation: fadeOut 0.5s;
   opacity: 0;
 }
+#imgCont {
+  margin-bottom: 82px;
+  margin-right: 100px;
+}
+.greenDollar {
+  margin-left: 31px;
+  margin-top: 11px;
+  transform-origin: 18px 40px;
+  animation: spin 60s infinite linear;
+}
+.redDollar {
+  margin-left: 34.5px;
+  margin-top: 14px;
+  transform-origin: 16px 39px;
+  animation: spin 1s infinite linear;
+}
+@keyframes spin {
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
 #otime_icon {
   position: absolute;
   left: 2%;

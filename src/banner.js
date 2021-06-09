@@ -156,6 +156,33 @@ export default class Banner extends React.Component {
         )}
         <br />
         <br />
+        <div id="imgCont">
+          <img
+            style={{ zIndex: "100", position: "absolute" }}
+            src="https://jax-apps.com/otime_app/pics/clock_bg.svg"
+            alt="Clock BG"
+            width="100"
+            height="100"
+          />
+          <img
+            class="redDollar"
+            style={{ zIndex: "200", position: "absolute" }}
+            src="https://jax-apps.com/otime_app/pics/clock_red.svg"
+            alt="Clock BG"
+            width="100"
+            height="100"
+          />
+          <img
+            class="greenDollar"
+            style={{ zIndex: "300", position: "absolute" }}
+            src="https://jax-apps.com/otime_app/pics/clock_green.svg"
+            alt="Clock BG"
+            width="75"
+            height="75"
+          />
+          <br />
+        </div>
+        <hr style={{ color: "white" }} />
         <div class="loginFormContainer">
           <form>
             <input
