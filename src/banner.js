@@ -167,18 +167,18 @@ export default class Banner extends React.Component {
           <img
             class="redDollar"
             style={{ zIndex: "200", position: "absolute" }}
-            src="https://jax-apps.com/otime_app/pics/clock_red.svg"
+            src="https://jax-apps.com/otime_app/pics/yellow_dollar.svg"
             alt="Clock BG"
-            width="100"
-            height="100"
+            width="25"
+            height="25"
           />
           <img
             class="greenDollar"
             style={{ zIndex: "300", position: "absolute" }}
-            src="https://jax-apps.com/otime_app/pics/clock_green.svg"
+            src="https://jax-apps.com/otime_app/pics/gold_dollar.svg"
             alt="Clock BG"
-            width="75"
-            height="75"
+            width="35"
+            height="35"
           />
           <br />
         </div>

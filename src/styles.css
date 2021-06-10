@@ -55,15 +55,15 @@ a:hover {
   margin-right: 100px;
 }
 .greenDollar {
-  margin-left: 31px;
-  margin-top: 11px;
-  transform-origin: 18px 40px;
-  animation: spin 60s infinite linear;
+  margin-left: 33px;
+  margin-top: 18px;
+  transform-origin: 17px 33px;
+  animation: spin 6s infinite linear;
 }
 .redDollar {
-  margin-left: 34.5px;
-  margin-top: 14px;
-  transform-origin: 16px 39px;
+  margin-left: 38px;
+  margin-top: 30px;
+  transform-origin: 12px 22px;
   animation: spin 1s infinite linear;
 }
 @keyframes spin {
