@@ -135,8 +135,43 @@ export default class Banner extends React.Component {
   resetMessage() {
     this.setState({
       messageColor: "white",
-      bannerMessage: "Welcome to O-time"
+      bannerMessage: "Welcome"
     });
+  }
+  getClock(s) {
+    return (
+      <div style={{ transform: "scale(" + s + ")" }}>
+        <div id="logo">
+          <div id="imgCont">
+            <img
+              style={{ zIndex: "100", position: "absolute" }}
+              src="https://jax-apps.com/otime_app/pics/clock_bg.svg"
+              alt="Clock BG"
+              width="100"
+              height="100"
+            />
+            <img
+              class="redDollar"
+              style={{ zIndex: "200", position: "absolute" }}
+              src="https://jax-apps.com/otime_app/pics/yellow_dollar.svg"
+              alt="Clock BG"
+              width="25"
+              height="25"
+            />
+            <img
+              class="greenDollar"
+              style={{ zIndex: "300", position: "absolute" }}
+              src="https://jax-apps.com/otime_app/pics/gold_dollar.svg"
+              alt="Clock BG"
+              width="35"
+              height="35"
+            />
+          </div>
+          <br />
+          Time
+        </div>
+      </div>
+    );
   }
   getBannerContent(statusCode) {
     var fontSize = (this.props.fontSize == 40 ? "15" : "20") + "px";
@@ -144,45 +179,7 @@ export default class Banner extends React.Component {
     this.overtime = this.props.overtimeHours * this.props.multiplier;
     var loginBanner = (
       <div>
-        <h1 id="welcome_banner" class={this.state.messageColor}>
-          {this.state.bannerMessage}
-        </h1>
-        {this.state.bannerMessage != "Welcome to O-time" ? (
-          <button class="okBtn" onClick={this.resetMessage.bind(this)}>
-            OK
-          </button>
-        ) : (
-          ""
-        )}
-        <br />
-        <br />
-        <div id="imgCont">
-          <img
-            style={{ zIndex: "100", position: "absolute" }}
-            src="https://jax-apps.com/otime_app/pics/clock_bg.svg"
-            alt="Clock BG"
-            width="100"
-            height="100"
-          />
-          <img
-            class="redDollar"
-            style={{ zIndex: "200", position: "absolute" }}
-            src="https://jax-apps.com/otime_app/pics/yellow_dollar.svg"
-            alt="Clock BG"
-            width="25"
-            height="25"
-          />
-          <img
-            class="greenDollar"
-            style={{ zIndex: "300", position: "absolute" }}
-            src="https://jax-apps.com/otime_app/pics/gold_dollar.svg"
-            alt="Clock BG"
-            width="35"
-            height="35"
-          />
-          <br />
-        </div>
-        <hr style={{ color: "white" }} />
+        {this.getClock(1)}
         <div class="loginFormContainer">
           <form>
             <input
@@ -224,7 +221,7 @@ export default class Banner extends React.Component {
         <h1 id="welcome_banner" class={this.state.messageColor}>
           {this.state.bannerMessage}
         </h1>
-        {this.state.bannerMessage != "Welcome to O-time" ? (
+        {this.state.bannerMessage != "Welcome " ? (
           <button class="okBtn" onClick={this.resetMessage.bind(this)}>
             OK
           </button>
@@ -281,7 +278,7 @@ export default class Banner extends React.Component {
         <h1 id="welcome_banner" class={this.state.messageColor}>
           {this.state.bannerMessage}
         </h1>
-        {this.state.bannerMessage != "Welcome to O-time" ? (
+        {this.state.bannerMessage != "Welcome" ? (
           <button class="okBtn" onClick={this.resetMessage.bind(this)}>
             OK
           </button>
@@ -323,18 +320,28 @@ export default class Banner extends React.Component {
         </div>
       </div>
     );
+    const customStyles = {
+      option: (provided, state) => ({
+        ...provided,
+        borderBottom: "1px dotted pink",
+        color: state.isSelected ? "red" : "blue",
+        padding: 20
+      }),
+      control: () => ({
+        // none of react-select's styles are passed to <Control />
+        width: 200
+      }),
+      singleValue: (provided, state) => {
+        const opacity = state.isDisabled ? 0.5 : 1;
+        const transition = "opacity 300ms";
+
+        return { ...provided, opacity, transition };
+      }
+    };
     var homeBanner = (
       <div>
         <div class="row">
-          <div class="column3">
-            <h4>Pay Rate: ${this.props.payRate.toFixed(2)}</h4>
-            <Select
-              id="sbSearch"
-              options={this.props.daySelect}
-              onChange={this.props.setJob.bind(this)}
-              placeholder="Job..."
-            />
-          </div>
+          <div class="column3">{this.getClock(0.5)}</div>
           <div class="column2">
             <div class="msgCont">
               {" "}
@@ -348,10 +355,37 @@ export default class Banner extends React.Component {
               ) : (
                 ""
               )}
+              <h2 id="name_label">{this.name}</h2>
             </div>
-            <h2 id="name_label">{this.name}</h2>
           </div>
+          <div class="column2"></div>
           <div class="row" style={{ fontSize: fontSize }}>
+            <div class="column4">
+              <h4>Pay Rate: ${this.props.payRate.toFixed(2)}</h4>
+              <Select
+                id="sbSearch"
+                style={customStyles}
+                options={this.props.daySelect}
+                onChange={this.props.setJob.bind(this)}
+                placeholder="Job..."
+              />
+              <button
+                class="menuItem"
+                onClick={() => this.props.showJobFn(this.state.id)}
+              >
+                Jobs
+              </button>
+              <br />
+              <button class="menuItem" onClick={this.goToLogin}>
+                Settings
+              </button>
+              <br />
+              <button class="menuItem" onClick={this.goToLogin}>
+                Logout
+              </button>
+              <br />
+            </div>
+
             <div class="column1">
               <h3
                 style={{
@@ -379,7 +413,6 @@ export default class Banner extends React.Component {
                 {this.pad(this.props.overtimeHours.toFixed(2), 5) + " hours "}
               </p>
               <br />
-              <hr class="leftHr" />
               <h3
                 style={{
                   background: this.props.colors[1],
@@ -421,7 +454,6 @@ export default class Banner extends React.Component {
                 {"$" + (this.overtime * this.props.payRate).toFixed(2)}
               </p>
               <br />
-              <hr class="rightHr" />
               <h3
                 style={{
                   background: this.props.colors[1],
@@ -438,20 +470,6 @@ export default class Banner extends React.Component {
                     this.props.payRate
                   ).toFixed(2)}
               </p>
-            </div>
-            <div class="forgregCont">
-              <button
-                class="menuItem"
-                onClick={() => this.props.showJobFn(this.state.id)}
-              >
-                Jobs
-              </button>
-              <button class="menuItem" onClick={this.goToLogin}>
-                Settings
-              </button>
-              <button class="menuItem" onClick={this.goToLogin}>
-                Logout
-              </button>
             </div>
           </div>
         </div>

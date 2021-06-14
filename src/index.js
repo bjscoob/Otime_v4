@@ -48,7 +48,7 @@ export class App extends React.Component {
       punches: [],
       totalHours: 0.0,
       messageColor: "white",
-      bannerMessage: "Welcome to O-time"
+      bannerMessage: "Welcome Back"
     };
     this.totalHours = 0;
     this.baseHours = 0.0;
@@ -56,7 +56,7 @@ export class App extends React.Component {
     this.hourCutoff = 40.0;
     this.resetsWeekly = 1;
     //default cardwidth should be 160. If anything else its for testing
-    this.cardWidth = "160";
+    this.cardWidth = "40";
     if (isMobileOnly) {
       this.cardWidth = "40";
     }
@@ -200,6 +200,7 @@ export class App extends React.Component {
     this.setJob(this.state.currJob);
   }
   async setJob(job) {
+    console.log(job);
     var arr = job.value.periodStarts.toString().split(" ");
     var sa = arr[0];
     var pp = await this.getPayPdtStart(job.value.id);
