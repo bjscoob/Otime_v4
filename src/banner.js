@@ -344,6 +344,19 @@ export default class Banner extends React.Component {
           <div class="column3">{this.getClock(0.5)}</div>
           <div class="column2">
             <div class="msgCont">
+              <h4>Pay Rate: ${this.props.payRate.toFixed(2)}</h4>
+              <Select
+                id="sbSearch"
+                style={customStyles}
+                options={this.props.daySelect}
+                onChange={this.props.setJob.bind(this)}
+                placeholder="Job..."
+              />
+            </div>
+          </div>
+          <div class="column2"></div>
+          <div class="row" style={{ fontSize: fontSize }}>
+            <div class="column4">
               {" "}
               <h1 id="welcome_banner" class={this.state.messageColor}>
                 {this.state.bannerMessage}
@@ -356,19 +369,6 @@ export default class Banner extends React.Component {
                 ""
               )}
               <h2 id="name_label">{this.name}</h2>
-            </div>
-          </div>
-          <div class="column2"></div>
-          <div class="row" style={{ fontSize: fontSize }}>
-            <div class="column4">
-              <h4>Pay Rate: ${this.props.payRate.toFixed(2)}</h4>
-              <Select
-                id="sbSearch"
-                style={customStyles}
-                options={this.props.daySelect}
-                onChange={this.props.setJob.bind(this)}
-                placeholder="Job..."
-              />
               <button
                 class="menuItem"
                 onClick={() => this.props.showJobFn(this.state.id)}
