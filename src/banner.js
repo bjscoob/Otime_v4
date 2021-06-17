@@ -354,7 +354,6 @@ export default class Banner extends React.Component {
               />
             </div>
           </div>
-          <div class="column2"></div>
           <div class="row" style={{ fontSize: fontSize }}>
             <div class="column4">
               {" "}
